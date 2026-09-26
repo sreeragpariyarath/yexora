@@ -24,7 +24,7 @@ There is no test framework configured.
 ## Styling conventions
 
 - The site is dark-only: `app/layout.tsx` hard-codes the `dark` class on `<html>` and `bg-[#050713] text-zinc-100` on `<body>`. The light/dark CSS variables in `globals.css` are leftover scaffolding and are overridden by these classes.
-- Fonts: Geist / Geist Mono come from `next/font` (CSS vars `--font-geist-sans` / `--font-geist-mono`). The display font **Bebas Neue** is loaded via a Google Fonts `@import` in `globals.css` and exposed as the `font-bebas` class; components also set it with an inline `style={{ fontFamily: ... }}` for reliability.
+- Fonts: Geist / Geist Mono / Poppins come from `next/font` (CSS vars `--font-geist-sans` / `--font-geist-mono` / `--font-poppins-sans`; Poppins is exposed as the `font-poppins` utility for body copy like the hero intro — keep the next/font var name different from the theme token to avoid a self-referencing var). The display font **Bebas Neue** is loaded via a Google Fonts `@import` in `globals.css` and exposed as the `font-bebas` class; components also set it with an inline `style={{ fontFamily: ... }}` for reliability.
 - Headline sizing uses viewport units (e.g. `text-[14.8vw]`) so the hero title spans the width on one line.
 - Accent colour is the `--color-accent` token in `globals.css` (`bg-accent`, `border-accent`, …).
 - Animations are plain Tailwind transitions — no animation library or plugin is installed. In Tailwind v4, `translate-*`/`scale-*`/`rotate-*` set the individual CSS `translate`/`scale`/`rotate` properties, so custom transitions must list those (e.g. `transition-[translate,opacity]`), not `transform`.
