@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
+import logoMark from "@/public/logo-mark.png";
 import MenuIcon from "./MenuIcon";
 import MenuOverlay, { type NavItem } from "./MenuOverlay";
 
@@ -23,40 +25,40 @@ export default function Header({ className = "" }: HeaderProps) {
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   return (
-    <header className={`w-full z-50 pt-5 sm:pt-5 px-4 sm:px-8 lg:px-8 ${className}`}>
-      {/* Desktop Navigation Grid */}
-      <div className="hidden lg:grid grid-cols-12 gap-5 xl:gap-8 items-end w-full">
-        {/* Brand / Logo Column */}
-        <div className="col-span-3 border-b border-white/35 pb-3">
-          <Link href="/" className="inline-flex items-center group focus:outline-none">
-            <span
-              style={{ fontFamily: "'Bebas Neue', Arial, sans-serif" }}
-              className="font-bebas text-2xl xl:text-3xl text-white tracking-widest leading-none pt-1 transition-opacity group-hover:opacity-90"
-            >
-              YEXORA
-            </span>
-          </Link>
-        </div>
+    <header
+      className={`w-full z-50 px-4 sm:px-8 lg:px-10 pt-5 pb-8 bg-linear-to-b from-[#050713]/70 to-transparent ${className}`}
+    >
+      {/* Logo · nav (centred on desktop) · actions */}
+      <div className="flex items-center justify-between lg:grid lg:grid-cols-[1fr_auto_1fr] gap-6">
+        <Link href="/" aria-label="Yexora home" className="group inline-flex items-center gap-2.5 justify-self-start">
+          <Image src={logoMark} alt="" priority className="w-6 h-6 brightness-0 invert transition-opacity group-hover:opacity-80" />
+          <span className="font-poppins font-medium text-lg text-white tracking-tight leading-none">Yexora</span>
+        </Link>
 
-        {/* Navigation Link Columns */}
-        {NAV_ITEMS.map((item) => (
-          <div key={item.label} className="col-span-2 border-b border-white/35 pb-3 group">
+        <nav aria-label="Main" className="hidden lg:flex items-center gap-10">
+          {NAV_ITEMS.map((item) => (
             <Link
+              key={item.label}
               href={item.href}
-              className="flex items-center gap-2.5 text-xs xl:text-sm font-semibold tracking-widest text-white/90 group-hover:text-white transition-colors uppercase"
+              className="font-poppins font-medium text-xs tracking-[0.14em] uppercase text-white/80 hover:text-white transition-colors"
             >
-              <span className="w-2.5 h-2.5 rounded-full border border-white/70 group-hover:border-white group-hover:bg-white/20 transition-all shrink-0" />
-              <span>{item.label}</span>
+              {item.label}
             </Link>
-          </div>
-        ))}
+          ))}
+        </nav>
 
-        {/* Right Menu Action Column */}
-        <div className="col-span-1 border-b border-white/35 pb-3 flex justify-center">
+        <div className="flex items-center gap-3 justify-self-end">
+          <Link
+            href="#contact"
+            className="font-poppins font-medium text-[11px] sm:text-xs tracking-[0.14em] uppercase text-white rounded-full px-4 sm:px-5 py-2.5 bg-white/10 border border-white/15 backdrop-blur-md hover:bg-white/20 hover:border-white/30 transition-colors"
+          >
+            Get started
+          </Link>
+
           <button
             type="button"
             onClick={() => setMenuOpen(true)}
-            className="group relative w-8 h-8 flex items-center justify-center text-white focus:outline-none cursor-pointer"
+            className="lg:hidden group relative w-8 h-8 flex items-center justify-center text-white focus:outline-none cursor-pointer"
             aria-label="Open menu"
             aria-expanded={menuOpen}
             aria-controls="site-menu"
@@ -66,30 +68,7 @@ export default function Header({ className = "" }: HeaderProps) {
         </div>
       </div>
 
-      {/* Mobile / Tablet Header Bar */}
-      <div className="lg:hidden flex items-center justify-between border-b border-white/35 pb-3">
-        <Link href="/" className="inline-flex items-center">
-          <span
-            style={{ fontFamily: "'Bebas Neue', Arial, sans-serif" }}
-            className="font-bebas text-2xl text-white tracking-widest leading-none pt-0.5"
-          >
-            YEXORA
-          </span>
-        </Link>
-
-        <button
-          type="button"
-          onClick={() => setMenuOpen(true)}
-          className="group relative w-8 h-8 flex items-center justify-center text-white focus:outline-none cursor-pointer"
-          aria-label="Open menu"
-          aria-expanded={menuOpen}
-          aria-controls="site-menu"
-        >
-          <MenuIcon isOpen={menuOpen} />
-        </button>
-      </div>
-
-      {/* Full-screen menu (all breakpoints) */}
+      {/* Full-screen menu (opened from the mobile/tablet bar) */}
       <MenuOverlay open={menuOpen} onClose={closeMenu} items={MENU_ITEMS} />
     </header>
   );
