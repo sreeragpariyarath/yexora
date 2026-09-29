@@ -4,7 +4,7 @@ import { useMemo, useRef, type RefObject } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { mulberry32 } from "./random";
-import { STAGES, type FlowState } from "./stages";
+import type { FlowState } from "./timeline";
 
 const COUNT = 500;
 
@@ -22,7 +22,7 @@ const vertexShader = /* glsl */ `
     vec4 mv = modelViewMatrix * vec4(p, 1.0);
     // A few large, faint "bokeh" blobs among many small specks
     float big = step(0.96, aRand.z);
-    gl_PointSize = mix(3.0 + aRand.z * 5.0, 60.0, big) * uPixelRatio * (10.0 / -mv.z);
+    gl_PointSize = mix(3.0 + aRand.z * 5.0, 90.0, big) * uPixelRatio * (10.0 / -mv.z);
     vAlpha = uOpacity * mix(0.35 + 0.65 * aRand.y, 0.12, big);
     gl_Position = projectionMatrix * mv;
   }
@@ -51,6 +51,7 @@ function buildBuffers() {
 }
 
 export default function Particles({ flowRef }: { flowRef: RefObject<FlowState> }) {
+  const points = useRef<THREE.Points>(null);
   const material = useRef<THREE.ShaderMaterial>(null);
   const buffers = useMemo(() => buildBuffers(), []);
   const params = useMemo(
@@ -64,23 +65,26 @@ export default function Particles({ flowRef }: { flowRef: RefObject<FlowState> }
         uTime: { value: 0 },
         uPixelRatio: { value: 1 },
         uOpacity: { value: 1 },
-        uColor: { value: new THREE.Color("#9d8cff") },
+        uColor: { value: new THREE.Color("#a58bff") },
       },
     }),
     []
   );
 
   useFrame((state) => {
-    if (!material.current) return;
     const f = flowRef.current;
+    // Specks travel with the camera so every section has some
+    if (points.current) points.current.position.x = f.camX;
+    if (!material.current) return;
     const u = material.current.uniforms;
     u.uTime.value = f.time;
     u.uPixelRatio.value = state.viewport.dpr;
-    u.uOpacity.value = f.weights.reduce((sum, w, i) => sum + w * STAGES[i].specks, 0) * f.grow;
+    // Fade in after the hero fan has loaded, as in the reference
+    u.uOpacity.value = f.specks * Math.max(0, (f.load - 0.6) / 0.4);
   });
 
   return (
-    <points frustumCulled={false}>
+    <points ref={points} frustumCulled={false}>
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[buffers.position, 3]} />
         <bufferAttribute attach="attributes-aRand" args={[buffers.random, 3]} />

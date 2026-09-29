@@ -5,11 +5,10 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { fiberFragment, fiberVertex } from "./fiberShader";
 import { mulberry32 } from "./random";
-import { STAGES, type FlowState } from "./stages";
+import { TAIL_X, WALL_B, type FlowState } from "./timeline";
 
-const STRANDS = 650;
+const STRANDS = 420;
 const POINTS = 96;
-const BURST = STAGES.findIndex((s) => s.shape === 5);
 
 function buildBuffers() {
   const count = STRANDS * POINTS;
@@ -37,7 +36,9 @@ function buildBuffers() {
   return { position: new Float32Array(count * 3), t, seed, index };
 }
 
+/** The tail of the chain: escape thread → beam → hourglass → scatter → burst. */
 export default function Fibers({ flowRef }: { flowRef: RefObject<FlowState> }) {
+  const group = useRef<THREE.Group>(null);
   const material = useRef<THREE.ShaderMaterial>(null);
   const buffers = useMemo(() => buildBuffers(), []);
   const params = useMemo(
@@ -54,6 +55,7 @@ export default function Fibers({ flowRef }: { flowRef: RefObject<FlowState> }) {
         uTime: { value: 0 },
         uGrow: { value: 0 },
         uBurst: { value: 0 },
+        uEscapeX: { value: WALL_B - TAIL_X },
         uCool: { value: 0 },
         uIntensity: { value: 0.55 },
         uBlue: { value: new THREE.Color("#2f6bff") },
@@ -66,27 +68,33 @@ export default function Fibers({ flowRef }: { flowRef: RefObject<FlowState> }) {
   );
 
   useFrame(() => {
-    if (!material.current) return;
     const f = flowRef.current;
+    if (group.current) {
+      group.current.visible = f.tailGrow > 0.001;
+      group.current.rotation.z = f.tailRotZ;
+    }
+    if (!material.current) return;
     const u = material.current.uniforms;
-    u.uFrom.value = STAGES[f.from].shape;
-    u.uTo.value = STAGES[f.to].shape;
-    u.uMix.value = f.mix;
+    u.uFrom.value = f.tailFrom;
+    u.uTo.value = f.tailTo;
+    u.uMix.value = f.tailMix;
     u.uTime.value = f.time;
-    u.uGrow.value = f.grow;
-    u.uBurst.value = f.weights[BURST];
-    u.uCool.value = f.weights[BURST] * 0.8;
+    u.uGrow.value = f.tailGrow;
+    u.uBurst.value = f.burst;
+    u.uCool.value = f.burst * 0.8;
   });
 
   return (
-    <lineSegments frustumCulled={false}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[buffers.position, 3]} />
-        <bufferAttribute attach="attributes-aT" args={[buffers.t, 1]} />
-        <bufferAttribute attach="attributes-aSeed" args={[buffers.seed, 3]} />
-        <bufferAttribute attach="index" args={[buffers.index, 1]} />
-      </bufferGeometry>
-      <shaderMaterial ref={material} args={[params]} />
-    </lineSegments>
+    <group ref={group} position={[TAIL_X, 0, 0]}>
+      <lineSegments frustumCulled={false}>
+        <bufferGeometry>
+          <bufferAttribute attach="attributes-position" args={[buffers.position, 3]} />
+          <bufferAttribute attach="attributes-aT" args={[buffers.t, 1]} />
+          <bufferAttribute attach="attributes-aSeed" args={[buffers.seed, 3]} />
+          <bufferAttribute attach="index" args={[buffers.index, 1]} />
+        </bufferGeometry>
+        <shaderMaterial ref={material} args={[params]} />
+      </lineSegments>
+    </group>
   );
 }

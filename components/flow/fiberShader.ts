@@ -1,5 +1,8 @@
-// Every strand's position is computed on the GPU from (t along the strand, per-strand seed),
-// so morphing between stage shapes is just a mix() of two shape functions.
+// The "tail" of the chain: fibres that escape wall B as a thin thread, become a
+// beam, pinch into an hourglass, scatter (invisible) and finally form the burst.
+// Every strand's position is computed on the GPU from (t along the strand,
+// per-strand seed), so a morph is just a mix() of two shape functions.
+// Coordinates are local to the tail group (centred at TAIL_X in timeline.ts).
 
 export const fiberVertex = /* glsl */ `
   uniform float uFrom;
@@ -8,6 +11,7 @@ export const fiberVertex = /* glsl */ `
   uniform float uTime;
   uniform float uGrow;
   uniform float uBurst;
+  uniform float uEscapeX;
 
   attribute float aT;
   attribute vec3 aSeed;
@@ -17,29 +21,20 @@ export const fiberVertex = /* glsl */ `
   varying float vAlpha;
 
   #define PI 3.14159265
+  #define TRUNK 0.22
 
-  // 0 — bundle enters from the left and fans out into a wide spray
-  vec3 spray(float t, vec3 s) {
+  // 0 — a thread leaves wall B, reaches a node and opens into a narrow beam
+  vec3 escape(float t, vec3 s) {
+    vec3 a = vec3(uEscapeX, -0.3, 0.0);
+    vec3 n = vec3(uEscapeX + 4.0, -0.3, 0.0);
+    if (t < TRUNK) return mix(a, n, t / TRUNK);
+    float u = (t - TRUNK) / (1.0 - TRUNK);
     float th = s.x * 2.0 * PI;
-    float r = sqrt(s.y);
-    float spread = pow(t, 2.1) * 7.5 + 0.04;
-    float x = mix(-12.0, 1.2 + s.z * 1.8, t);
-    return vec3(x, sin(th) * r * spread, cos(th) * r * spread * 0.55 - t * 1.5);
+    float r = sqrt(s.y) * (0.08 + 2.0 * pow(u, 2.2));
+    return vec3(mix(n.x, 14.0, u), n.y + sin(th) * r + u * 1.2, cos(th) * r * 0.5);
   }
 
-  // 1 — wide fan on the left, pinched to a bright point, second fan bending down-right
-  vec3 doubleFan(float t, vec3 s) {
-    float th = s.x * 2.0 * PI;
-    float r = sqrt(s.y);
-    float u = t - 0.55;
-    float left = pow(max(-u, 0.0) / 0.55, 1.5) * 7.5;
-    float right = pow(max(u, 0.0) / 0.45, 1.7) * 3.4;
-    float spread = left + right + 0.03;
-    float x = mix(-13.0, 9.0, t);
-    return vec3(x, sin(th) * r * spread - 0.4 - right * 0.7, cos(th) * r * spread * 0.55);
-  }
-
-  // 2 — everything collapses into one diagonal beam that flares at the far end
+  // 1 — one diagonal beam that flares at the far end
   vec3 beam(float t, vec3 s) {
     vec3 a = vec3(-13.0, -6.5, 1.0);
     vec3 b = vec3(13.0, 6.0, -3.0);
@@ -51,7 +46,7 @@ export const fiberVertex = /* glsl */ `
     return mix(a, b, t) + (n1 * sin(th) + n2 * cos(th)) * r;
   }
 
-  // 3 — straight strands twisted between two rings: an hourglass with a narrow waist
+  // 2 — straight strands twisted between two rings: an hourglass with a narrow waist
   vec3 hourglass(float t, vec3 s) {
     float th = s.x * 2.0 * PI;
     float R = 5.2 + s.y * 1.4;
@@ -61,12 +56,12 @@ export const fiberVertex = /* glsl */ `
     return mix(a, b, t);
   }
 
-  // 4 — hourglass blown apart (fibres fade out while the tubes take over)
+  // 3 — hourglass blown apart (fibres fade out while the tubes take over)
   vec3 scatter(float t, vec3 s) {
     return hourglass(t, s) * vec3(1.6, 2.4, 2.4) + vec3(0.0, 0.0, 5.0);
   }
 
-  // 5 — a small ring that grows into a half-sun of radial fibres
+  // 4 — a small ring that grows into a half-sun of radial fibres
   vec3 burst(float t, vec3 s) {
     float th = s.x * 2.0 * PI;
     float r = mix(0.7, 3.6 + s.y * 2.4, t) * mix(0.12, 1.0, uBurst);
@@ -74,16 +69,18 @@ export const fiberVertex = /* glsl */ `
   }
 
   vec3 shapeOf(float id, float t, vec3 s) {
-    if (id < 0.5) return spray(t, s);
-    if (id < 1.5) return doubleFan(t, s);
-    if (id < 2.5) return beam(t, s);
-    if (id < 3.5) return hourglass(t, s);
-    if (id < 4.5) return scatter(t, s);
+    if (id < 0.5) return escape(t, s);
+    if (id < 1.5) return beam(t, s);
+    if (id < 2.5) return hourglass(t, s);
+    if (id < 3.5) return scatter(t, s);
     return burst(t, s);
   }
 
-  float alphaOf(float id) {
-    return (id > 3.5 && id < 4.5) ? 0.0 : 1.0;
+  float alphaOf(float id, float t) {
+    if (id > 2.5 && id < 3.5) return 0.0;
+    // Hundreds of strands overlap in the escape trunk; keep it a thread, not a blowout
+    if (id < 0.5 && t < TRUNK) return 0.06;
+    return 1.0;
   }
 
   void main() {
@@ -93,7 +90,7 @@ export const fiberVertex = /* glsl */ `
 
     // Leaving an invisible shape: don't fly in from it, just fade in at the new shape
     vec3 to = shapeOf(uTo, aT, aSeed);
-    vec3 from = alphaOf(uFrom) > 0.5 ? shapeOf(uFrom, aT, aSeed) : to;
+    vec3 from = alphaOf(uFrom, 0.5) > 0.5 ? shapeOf(uFrom, aT, aSeed) : to;
     vec3 p = mix(from, to, m);
 
     float wobble = sin(aT * 7.0 + uTime * 0.7 + aSeed.x * 30.0) * 0.05
@@ -101,8 +98,8 @@ export const fiberVertex = /* glsl */ `
     p.y += wobble;
     p.z += wobble * 0.7;
 
-    vAlpha = mix(alphaOf(uFrom), alphaOf(uTo), m);
-    vAlpha *= 1.0 - smoothstep(uGrow - 0.08, uGrow, aT);
+    vAlpha = mix(alphaOf(uFrom, aT), alphaOf(uTo, aT), m);
+    vAlpha *= 1.0 - smoothstep(uGrow * 1.08 - 0.08, uGrow * 1.08, aT);
     vT = aT;
     vSeed = aSeed;
 
@@ -124,7 +121,7 @@ export const fiberFragment = /* glsl */ `
 
   void main() {
     float g = clamp(vT + (vSeed.y - 0.5) * 0.35, 0.0, 1.0);
-    vec3 col = mix(uBlue, uViolet, smoothstep(0.15, 0.75, g));
+    vec3 col = mix(uBlue, uViolet, smoothstep(-0.25, 0.5, g));
     vec3 tip = mix(uPink, uCyan, step(0.5, vSeed.x));
     col = mix(col, tip, smoothstep(0.8, 1.0, vT) * 0.6);
     // Final burst stage runs cooler (blue → cyan)

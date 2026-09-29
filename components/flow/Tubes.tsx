@@ -4,11 +4,10 @@ import { useMemo, useRef, type RefObject } from "react";
 import { useFrame } from "@react-three/fiber";
 import { Environment, Lightformer } from "@react-three/drei";
 import * as THREE from "three";
-import { STAGES, type FlowState } from "./stages";
+import { TAIL_X, type FlowState } from "./timeline";
 
 const TUBES = 4;
 const SEGMENTS = 420;
-const STAGE = STAGES.findIndex((s) => s.shape === 4);
 
 // A drifting line with a looping wobble: x doubles back on itself where the
 // z/y oscillation is fast enough, which is what draws the curls.
@@ -33,25 +32,21 @@ export default function Tubes({ flowRef }: { flowRef: RefObject<FlowState> }) {
   const group = useRef<THREE.Group>(null);
   const curves = useMemo(() => Array.from({ length: TUBES }, (_, k) => tubeCurve(k)), []);
 
-  useFrame((_, dt) => {
+  useFrame(() => {
     const g = group.current;
     if (!g) return;
     const f = flowRef.current;
-    const entering = f.to === STAGE && f.from !== STAGE;
-    const leaving = f.from === STAGE && f.to !== STAGE;
-    // Tubes draw themselves in on the way to this stage and fade out on the way to the next
-    const draw = entering ? f.mix : f.from === STAGE ? 1 : 0;
-    const opacity = leaving ? 1 - f.mix : draw > 0 ? 1 : 0;
-
-    g.visible = draw > 0.001 && opacity > 0.001;
+    // Tubes draw themselves in, sweep past the camera, then fade out before the burst
+    g.visible = f.tubesDraw > 0.001 && f.tubesOpacity > 0.001;
     if (!g.visible) return;
-    g.rotation.x = -0.25 + f.p * 0.6;
-    g.rotation.y += dt * 0.05;
+    g.rotation.x = -0.25 + f.tubesSweep * 0.7;
+    g.rotation.y = -0.2 + f.tubesSweep * 0.5;
+    g.position.z = f.tubesSweep * 4;
     for (const child of g.children) {
       const mesh = child as THREE.Mesh<THREE.TubeGeometry, THREE.MeshPhysicalMaterial>;
-      mesh.material.opacity = opacity;
+      mesh.material.opacity = f.tubesOpacity;
       const total = mesh.geometry.index?.count ?? 0;
-      mesh.geometry.setDrawRange(0, Math.floor((total * draw) / 6) * 6);
+      mesh.geometry.setDrawRange(0, Math.floor((total * f.tubesDraw) / 6) * 6);
     }
   });
 
@@ -62,7 +57,7 @@ export default function Tubes({ flowRef }: { flowRef: RefObject<FlowState> }) {
         <Lightformer form="rect" intensity={3} color="#ff5fd2" position={[6, -2, -4]} scale={[12, 4, 1]} />
         <Lightformer form="ring" intensity={2} color="#ffffff" position={[0, 6, 2]} scale={4} />
       </Environment>
-      <group ref={group} visible={false}>
+      <group ref={group} position={[TAIL_X, 0, 0]} visible={false}>
         {curves.map((curve, k) => (
           <mesh key={k} frustumCulled={false}>
             <tubeGeometry args={[curve, SEGMENTS, k === 0 ? 0.16 : 0.1, 20]} />
