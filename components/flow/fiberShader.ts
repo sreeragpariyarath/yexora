@@ -19,24 +19,32 @@ export const fiberVertex = /* glsl */ `
   varying float vT;
   varying vec3 vSeed;
   varying float vAlpha;
+  varying float vBoost;
 
   #define PI 3.14159265
   // Trunk share ≈ its length share (thread from fan B's node to this node vs the spread)
   #define TRUNK 0.32
 
+  // Radius of the bundle for the thread-like shapes. Their per-strand light scales with
+  // it (see alphaOf): where the bundle is tight each strand is faint, so together they
+  // read as one thick lilac thread instead of stacking into a white bar.
+  #define BUNDLE 0.1
+  float escapeEnvelope(float u) { return BUNDLE + 0.6 * pow(u, 3.0); }
+  float beamEnvelope(float t) { return BUNDLE + 1.1 * pow(t, 5.0); }
+
   // 0 — like fan B's thread: starts at fan B's node and runs along its centre strand,
-  // through wall B, to a node where it gently opens into a narrow beam
+  // through wall B, to a node, then carries on as one thick thread that widens slightly
   vec3 escape(float t, vec3 s) {
     vec3 a = vec3(uThreadX, 0.0, 0.0);
     vec3 n = vec3(uEscapeX + 4.0, 0.0, 0.0);
     if (t < TRUNK) return mix(a, n, t / TRUNK);
     float u = (t - TRUNK) / (1.0 - TRUNK);
     float th = s.x * 2.0 * PI;
-    float r = sqrt(s.y) * (0.03 + 2.4 * pow(u, 1.8));
+    float r = sqrt(s.y) * escapeEnvelope(u);
     return vec3(mix(n.x, 14.0, u), n.y + sin(th) * r + u * 1.2, cos(th) * r * 0.5);
   }
 
-  // 1 — one diagonal beam that flares at the far end
+  // 1 — the same thick thread, swung into a diagonal that flares slightly at the far end
   vec3 beam(float t, vec3 s) {
     vec3 a = vec3(-13.0, -6.5, 1.0);
     vec3 b = vec3(13.0, 6.0, -3.0);
@@ -44,17 +52,21 @@ export const fiberVertex = /* glsl */ `
     vec3 n1 = normalize(cross(dir, vec3(0.0, 0.0, 1.0)));
     vec3 n2 = cross(dir, n1);
     float th = s.x * 2.0 * PI;
-    float r = sqrt(s.y) * (0.05 + 1.1 * pow(t, 5.0));
+    float r = sqrt(s.y) * beamEnvelope(t);
     return mix(a, b, t) + (n1 * sin(th) + n2 * cos(th)) * r;
   }
 
-  // 2 — straight strands twisted between two rings: an hourglass with a narrow waist
+  // 2 — the hourglass: straight lines twisted between two rings (a hyperboloid). Only an
+  // evenly spaced subset of strands is shown (see alphaOf) so it reads as distinct
+  // threads crossing into a lattice at the waist, not a haze.
+  #define LINES 56.0
+  bool hourglassLine(vec3 s) { return s.y < 0.26; }
   vec3 hourglass(float t, vec3 s) {
-    float th = s.x * 2.0 * PI;
-    float R = 5.2 + s.y * 1.4;
-    float twist = 2.75;
-    vec3 a = vec3(-11.0, R * cos(th) * 0.85, R * sin(th) * 0.6);
-    vec3 b = vec3(11.0, R * cos(th + twist) * 0.85, R * sin(th + twist) * 0.6);
+    float th = (floor(s.x * LINES) + 0.5) / LINES * 2.0 * PI;
+    float R = 7.4;
+    float twist = 2.8;
+    vec3 a = vec3(-13.0, R * cos(th) * 0.9, R * sin(th) * 0.75);
+    vec3 b = vec3(13.0, R * cos(th + twist) * 0.9, R * sin(th + twist) * 0.75);
     return mix(a, b, t);
   }
 
@@ -70,7 +82,7 @@ export const fiberVertex = /* glsl */ `
     return scatter(t, s);
   }
 
-  float alphaOf(float id, float t) {
+  float alphaOf(float id, float t, vec3 s) {
     if (id > 2.5) return 0.0;
     // Hundreds of strands overlap in the escape trunk: about one strand's worth of light,
     // brightening into the node, with a glowing tip while it grows (same as fan B's thread)
@@ -78,10 +90,16 @@ export const fiberVertex = /* glsl */ `
       float tip = (1.0 - smoothstep(0.0, 0.06, uGrow * 1.08 - t)) * step(uGrow, 0.995);
       return mix(0.004, 0.06, smoothstep(0.55, 1.0, t / TRUNK)) + tip * 0.04;
     }
-    // Just past the node the strands are still bunched; ramp their light up as they
-    // open, or hundreds of them stack into a solid white bar
-    if (id < 0.5) return mix(0.06, 1.0, smoothstep(0.0, 0.35, (t - TRUNK) / (1.0 - TRUNK)));
-    return 1.0;
+    // Thick-thread shapes: light per strand follows the bundle's width (density compensation)
+    if (id < 0.5) return 0.02 * escapeEnvelope((t - TRUNK) / (1.0 - TRUNK)) / BUNDLE;
+    if (id < 1.5) return 0.02 * beamEnvelope(t) / BUNDLE;
+    // Hourglass: only the line subset shows
+    return hourglassLine(s) ? 1.0 : 0.0;
+  }
+
+  // Extra colour gain so the few hourglass lines glow as brightly as the dense shapes
+  float boostOf(float id, vec3 s) {
+    return (id > 1.5 && id < 2.5 && hourglassLine(s)) ? 1.8 : 1.0;
   }
 
   void main() {
@@ -91,7 +109,7 @@ export const fiberVertex = /* glsl */ `
 
     // Leaving an invisible shape: don't fly in from it, just fade in at the new shape
     vec3 to = shapeOf(uTo, aT, aSeed);
-    vec3 from = alphaOf(uFrom, 0.5) > 0.5 ? shapeOf(uFrom, aT, aSeed) : to;
+    vec3 from = uFrom < 2.5 ? shapeOf(uFrom, aT, aSeed) : to;
     vec3 p = mix(from, to, m);
 
     float wobble = sin(aT * 7.0 + uTime * 0.7 + aSeed.x * 30.0) * 0.05
@@ -99,7 +117,8 @@ export const fiberVertex = /* glsl */ `
     p.y += wobble;
     p.z += wobble * 0.7;
 
-    vAlpha = mix(alphaOf(uFrom, aT), alphaOf(uTo, aT), m);
+    vAlpha = mix(alphaOf(uFrom, aT, aSeed), alphaOf(uTo, aT, aSeed), m);
+    vBoost = mix(boostOf(uFrom, aSeed), boostOf(uTo, aSeed), m);
     // Draw-in front; past the trunk each strand's front is offset a little so the
     // growing beam ends in a feathered tip instead of one blunt edge
     float front = uGrow * 1.08 - (aT > TRUNK ? aSeed.z * 0.06 : 0.0);
@@ -121,6 +140,7 @@ export const fiberFragment = /* glsl */ `
   varying float vT;
   varying vec3 vSeed;
   varying float vAlpha;
+  varying float vBoost;
 
   void main() {
     float g = clamp(vT + (vSeed.y - 0.5) * 0.35, 0.0, 1.0);
@@ -130,6 +150,6 @@ export const fiberFragment = /* glsl */ `
 
     float a = vAlpha * smoothstep(0.0, 0.04, vT) * (1.0 - 0.7 * smoothstep(0.85, 1.0, vT));
     a *= (0.45 + 0.55 * vSeed.z) * uIntensity;
-    gl_FragColor = vec4(col, a);
+    gl_FragColor = vec4(col * vBoost, a);
   }
 `;
