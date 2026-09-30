@@ -57,7 +57,7 @@ export default function CopyBlock({
         glass ? "liquid-glass p-7 sm:p-9 lg:p-[2.5vw]" : ""
       } ${shown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"} ${className}`}
     >
-      <p className="font-poppins font-medium uppercase text-[11px] lg:text-xs tracking-[0.18em] text-white/60 inline-flex items-center gap-2.5">
+      <p className={`font-poppins font-medium uppercase text-[11px] lg:text-xs tracking-[0.18em] ${glass ? "text-white/80" : "text-white/60"} inline-flex items-center gap-2.5`}>
         <span aria-hidden className="w-2 h-2 rotate-45 border border-white/70" />
         {eyebrow}
       </p>
@@ -69,7 +69,7 @@ export default function CopyBlock({
         {title}
       </h2>
       {body && (
-        <p className="font-poppins text-sm sm:text-base lg:text-[1.02vw] leading-relaxed text-white/75 mt-5 max-w-[34rem] mx-auto lg:mx-0">
+        <p className={`font-poppins text-sm sm:text-base lg:text-[1.02vw] leading-relaxed ${glass ? "text-white/90" : "text-white/75"} mt-5 max-w-[34rem] mx-auto lg:mx-0`}>
           {body}
         </p>
       )}

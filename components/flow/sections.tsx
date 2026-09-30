@@ -62,10 +62,10 @@ export default function FlowSections() {
       <section data-chapter id="services" className="relative h-[180vh] w-full">
         <div className={`${PIN} lg:items-center lg:justify-center lg:text-left lg:pl-[12vw]`}>
           <CopyBlock glass eyebrow="What we do" title="Built End-to-End." className="max-w-xl lg:max-w-[40vw]">
-            <ul className="mt-6 grid sm:grid-cols-2 gap-x-8 gap-y-3 text-left font-poppins text-sm lg:text-[0.95vw] text-white/80">
+            <ul className="mt-6 grid sm:grid-cols-2 gap-3 text-left font-poppins text-sm lg:text-[0.95vw] text-white/90">
               {SERVICES.map((s) => (
-                <li key={s} className="flex items-center gap-3 border-b border-white/10 pb-3">
-                  <span aria-hidden className="w-1.5 h-1.5 rounded-full bg-accent shadow-[0_0_10px_rgba(47,107,255,0.9)] shrink-0" />
+                <li key={s} className="glass-tile flex items-center gap-3 px-4 py-3">
+                  <span aria-hidden className="w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_10px_rgba(200,185,255,0.95)] shrink-0" />
                   {s}
                 </li>
               ))}
