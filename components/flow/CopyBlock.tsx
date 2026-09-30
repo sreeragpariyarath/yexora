@@ -53,6 +53,8 @@ export default function CopyBlock({
   return (
     <div
       ref={ref}
+      data-glass={glass ? "" : undefined}
+      data-glass-shown={glass ? (shown ? "1" : "0") : undefined}
       className={`relative isolate text-white transition-[opacity,translate] duration-1000 ease-out ${
         glass ? "liquid-glass p-7 sm:p-9 lg:p-[2.5vw]" : ""
       } ${shown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"} ${className}`}

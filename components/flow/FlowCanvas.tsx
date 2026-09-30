@@ -7,6 +7,7 @@ import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import * as THREE from "three";
 import Fan, { type FanDrive } from "./Fan";
 import Fibers from "./Fibers";
+import LiquidGlass from "./glassLens";
 import Particles from "./Particles";
 import { FAN_A, FAN_B, chapterAt, createFlowState, evaluate, type FlowState } from "./timeline";
 import useReducedMotion from "./useReducedMotion";
@@ -137,6 +138,8 @@ export default function FlowCanvas({ layoutRef }: FlowCanvasProps) {
           radius={0.75}
           resolutionScale={0.5}
         />
+        {/* Liquid glass lens over the copy panels; after Bloom so it refracts the glow */}
+        <LiquidGlass />
       </EffectComposer>
     </Canvas>
   );
