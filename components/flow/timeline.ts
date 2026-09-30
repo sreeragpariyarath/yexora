@@ -75,14 +75,18 @@ export const FAN_A: FanConfig = {
 export const FAN_B: FanConfig = {
   strands: 380,
   seed: 11,
-  start: [WALL_A, 0.3, 0],
-  node: [3, 0.3, 0],
+  // The thread starts back at fan A's node and runs along its centre strand, so it
+  // reads as one of fan A's fibres continuing through wall A
+  start: FAN_A.node,
+  node: [3, 0, 0],
   wallX: WALL_B,
   free: 4,
   spread: 5.5,
   depth: 0.5,
-  bend: -5.5,
-  trunk: 0.22,
+  // Blooms upward
+  bend: 5.5,
+  // Trunk share ≈ its length share (13.5 of ~21.5 units) so points stay evenly spaced
+  trunk: 0.6,
 };
 
 // Tail shape ids in fiberShader.ts
@@ -118,8 +122,8 @@ const T = {
   ]),
 
   fanBGrow: track([
-    [1.0, 0],
-    [1.55, 1],
+    [0.95, 0],
+    [1.6, 1],
   ]),
   fanBWall: track([
     [1.7, 0],

@@ -71,8 +71,12 @@ export const fanLineVertex = /* glsl */ `
     a *= 1.0 - smoothstep(uLoad * 1.06 - 0.05, uLoad * 1.06, u);
     // Free ends fade out; ends on the wall stay lit
     a *= mix(1.0 - smoothstep(0.5, 1.0, u), 1.0, uWall);
-    // Hundreds of strands overlap in the trunk; keep it a bright thread, not a blowout
-    a *= aT < uTrunk ? 0.05 : mix(0.2, 1.0, smoothstep(0.0, 0.12, u));
+    // Hundreds of strands overlap in the trunk, so keep it about one strand's worth of
+    // light far from the node (it reads as a single fibre continuing from the fan
+    // before), brightening into the node. While growing, a small glowing tip leads it.
+    float tip = (1.0 - smoothstep(0.0, 0.06, uGrow * 1.05 - aT)) * step(uGrow, 0.995);
+    float trunkA = mix(0.004, 0.05, smoothstep(0.55, 1.0, aT / uTrunk)) + tip * 0.035;
+    a *= aT < uTrunk ? trunkA : mix(0.2, 1.0, smoothstep(0.0, 0.12, u));
 
     vU = u;
     vSeed = aSeed;

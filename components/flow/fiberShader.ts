@@ -24,8 +24,9 @@ export const fiberVertex = /* glsl */ `
 
   // 0 — a thread leaves wall B, reaches a node and opens into a narrow beam
   vec3 escape(float t, vec3 s) {
-    vec3 a = vec3(uEscapeX, -0.3, 0.0);
-    vec3 n = vec3(uEscapeX + 4.0, -0.3, 0.0);
+    // Leaves wall B near its lower edge (fan B blooms upward)
+    vec3 a = vec3(uEscapeX, 1.2, 0.0);
+    vec3 n = vec3(uEscapeX + 4.0, 1.2, 0.0);
     if (t < TRUNK) return mix(a, n, t / TRUNK);
     float u = (t - TRUNK) / (1.0 - TRUNK);
     float th = s.x * 2.0 * PI;
@@ -69,8 +70,12 @@ export const fiberVertex = /* glsl */ `
 
   float alphaOf(float id, float t) {
     if (id > 2.5) return 0.0;
-    // Hundreds of strands overlap in the escape trunk; keep it a thread, not a blowout
-    if (id < 0.5 && t < TRUNK) return 0.06;
+    // Hundreds of strands overlap in the escape trunk: about one strand's worth of light,
+    // brightening into the node, with a glowing tip while it grows (same as fan B's thread)
+    if (id < 0.5 && t < TRUNK) {
+      float tip = (1.0 - smoothstep(0.0, 0.06, uGrow * 1.08 - t)) * step(uGrow, 0.995);
+      return mix(0.004, 0.06, smoothstep(0.55, 1.0, t / TRUNK)) + tip * 0.04;
+    }
     return 1.0;
   }
 
