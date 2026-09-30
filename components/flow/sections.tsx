@@ -98,7 +98,7 @@ const smoothstep = (a: number, b: number, v: number) => {
   return x * x * (3 - 2 * x);
 };
 
-/** Burst stage: the dashboard rises from below and tilts flat as you scroll (no React renders). */
+/** Final stage: the dashboard rises from below and tilts flat as you scroll (no React renders). */
 function Product() {
   const sectionRef = useRef<HTMLElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -185,15 +185,12 @@ export default function FlowSections() {
         </div>
       </section>
 
-      {/* Tubes interlude: the scene has the screen to itself */}
-      <section data-chapter aria-hidden className="relative h-[150vh] w-full" />
-
       <Product />
     </>
   );
 }
 
-/** Placeholder product panel that rises in front of the final burst. TODO: real content. */
+/** Placeholder product panel that rises at the end of the flow. TODO: real content. */
 function DashboardPanel() {
   return (
     <div className="w-full h-[62vh] rounded-t-2xl border border-b-0 border-white/10 bg-[#0c0f1f]/85 backdrop-blur-xl shadow-[0_-20px_80px_rgba(47,107,255,0.25)] flex overflow-hidden">

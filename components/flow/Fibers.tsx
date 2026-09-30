@@ -36,7 +36,7 @@ function buildBuffers() {
   return { position: new Float32Array(count * 3), t, seed, index };
 }
 
-/** The tail of the chain: escape thread → beam → hourglass → scatter → burst. */
+/** The tail of the chain: escape thread → beam → hourglass → scatter (fades out). */
 export default function Fibers({ flowRef }: { flowRef: RefObject<FlowState> }) {
   const group = useRef<THREE.Group>(null);
   const material = useRef<THREE.ShaderMaterial>(null);
@@ -54,9 +54,7 @@ export default function Fibers({ flowRef }: { flowRef: RefObject<FlowState> }) {
         uMix: { value: 0 },
         uTime: { value: 0 },
         uGrow: { value: 0 },
-        uBurst: { value: 0 },
         uEscapeX: { value: WALL_B - TAIL_X },
-        uCool: { value: 0 },
         uIntensity: { value: 0.55 },
         uBlue: { value: new THREE.Color("#2f6bff") },
         uViolet: { value: new THREE.Color("#8b5cf6") },
@@ -80,8 +78,6 @@ export default function Fibers({ flowRef }: { flowRef: RefObject<FlowState> }) {
     u.uMix.value = f.tailMix;
     u.uTime.value = f.time;
     u.uGrow.value = f.tailGrow;
-    u.uBurst.value = f.burst;
-    u.uCool.value = f.burst * 0.8;
   });
 
   return (

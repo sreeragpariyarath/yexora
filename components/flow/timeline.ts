@@ -35,7 +35,7 @@ export function chapterAt(y: number, tops: number[], maxScroll: number) {
 // ---------------------------------------------------------------------------
 // World layout: the chain runs along +x and the camera pans right with scroll.
 // Fan A (hero) → wall A → escaping thread → Fan B → wall B → escaping thread →
-// tail fibres (beam → hourglass → scatter → burst) + tubes.
+// tail fibres (beam → hourglass → scatter, fading out behind the dashboard).
 
 export interface FanConfig {
   strands: number;
@@ -86,7 +86,7 @@ export const FAN_B: FanConfig = {
 };
 
 // Tail shape ids in fiberShader.ts
-export const SHAPE = { escape: 0, beam: 1, hourglass: 2, scatter: 3, burst: 4 } as const;
+export const SHAPE = { escape: 0, beam: 1, hourglass: 2, scatter: 3 } as const;
 
 const T = {
   camX: track([
@@ -97,11 +97,6 @@ const T = {
     [2.5, 10],
     [3, TAIL_X],
   ]),
-  camY: track([
-    [0, 0],
-    [5.9, 0],
-    [6.5, 0.4],
-  ]),
   camZ: track([
     [0, 12],
     [1, 11.5],
@@ -109,13 +104,8 @@ const T = {
     [3, 11],
     [3.4, 12],
     [4.2, 12.5],
-    [5, 10],
-    [6, 12],
-  ]),
-  targetY: track([
-    [0, 0],
-    [5.9, 0],
-    [6.5, 0.6],
+    // Product: ease back while the hourglass scatters behind the dashboard
+    [5.4, 14],
   ]),
 
   fanAWall: track([
@@ -151,9 +141,7 @@ const T = {
     [4.0, SHAPE.beam],
     [4.35, SHAPE.hourglass],
     [5.0, SHAPE.hourglass],
-    [5.3, SHAPE.scatter],
-    [6.0, SHAPE.scatter],
-    [6.45, SHAPE.burst],
+    [5.35, SHAPE.scatter],
   ]),
   // Beam swings from its diagonal up to near-vertical, then back flat for the hourglass
   tailRotZ: track([
@@ -162,31 +150,13 @@ const T = {
     [4.05, 1.05],
     [4.4, 0],
   ]),
-  burst: track([
-    [6.0, 0],
-    [6.45, 1],
-  ]),
-
-  tubesDraw: track([
-    [5.05, 0],
-    [5.5, 1],
-  ]),
-  tubesOpacity: track([
-    [5.65, 1],
-    [6.0, 0],
-  ]),
-  tubesSweep: track([
-    [5.0, 0],
-    [6.0, 1],
-  ]),
 
   specks: track([
     [0, 1],
     [2, 1],
     [2.6, 0.5],
     [4, 0.35],
-    [5, 0.5],
-    [6, 0.3],
+    [5.4, 0.6],
   ]),
 };
 
@@ -198,9 +168,7 @@ export function createFlowState() {
     /** Hero intro (time-driven, 0–1) */
     load: 0,
     camX: 0,
-    camY: 0,
     camZ: 12,
-    targetY: 0,
     fanAWall: 0,
     fanAAlpha: 1,
     fanBGrow: 0,
@@ -211,10 +179,6 @@ export function createFlowState() {
     tailTo: 0,
     tailMix: 0,
     tailRotZ: 0,
-    burst: 0,
-    tubesDraw: 0,
-    tubesOpacity: 1,
-    tubesSweep: 0,
     specks: 1,
   };
 }
@@ -224,9 +188,7 @@ export type FlowState = ReturnType<typeof createFlowState>;
 export function evaluate(f: FlowState, c: number) {
   f.c = c;
   f.camX = T.camX(c);
-  f.camY = T.camY(c);
   f.camZ = T.camZ(c);
-  f.targetY = T.targetY(c);
   f.fanAWall = T.fanAWall(c);
   f.fanAAlpha = T.fanAAlpha(c);
   f.fanBGrow = T.fanBGrow(c);
@@ -235,12 +197,8 @@ export function evaluate(f: FlowState, c: number) {
   f.tailGrow = T.tailGrow(c);
   const s = T.tailShape(c);
   f.tailFrom = Math.floor(s);
-  f.tailTo = Math.min(f.tailFrom + 1, SHAPE.burst);
+  f.tailTo = Math.min(f.tailFrom + 1, SHAPE.scatter);
   f.tailMix = s - f.tailFrom;
   f.tailRotZ = T.tailRotZ(c);
-  f.burst = T.burst(c);
-  f.tubesDraw = T.tubesDraw(c);
-  f.tubesOpacity = T.tubesOpacity(c);
-  f.tubesSweep = T.tubesSweep(c);
   f.specks = T.specks(c);
 }

@@ -1,5 +1,5 @@
 // The "tail" of the chain: fibres that escape wall B as a thin thread, become a
-// beam, pinch into an hourglass, scatter (invisible) and finally form the burst.
+// beam, pinch into an hourglass, then scatter and fade out behind the dashboard.
 // Every strand's position is computed on the GPU from (t along the strand,
 // per-strand seed), so a morph is just a mix() of two shape functions.
 // Coordinates are local to the tail group (centred at TAIL_X in timeline.ts).
@@ -10,7 +10,6 @@ export const fiberVertex = /* glsl */ `
   uniform float uMix;
   uniform float uTime;
   uniform float uGrow;
-  uniform float uBurst;
   uniform float uEscapeX;
 
   attribute float aT;
@@ -56,28 +55,20 @@ export const fiberVertex = /* glsl */ `
     return mix(a, b, t);
   }
 
-  // 3 — hourglass blown apart (fibres fade out while the tubes take over)
+  // 3 — hourglass blown apart while the fibres fade out
   vec3 scatter(float t, vec3 s) {
     return hourglass(t, s) * vec3(1.6, 2.4, 2.4) + vec3(0.0, 0.0, 5.0);
-  }
-
-  // 4 — a small ring that grows into a half-sun of radial fibres
-  vec3 burst(float t, vec3 s) {
-    float th = s.x * 2.0 * PI;
-    float r = mix(0.7, 3.6 + s.y * 2.4, t) * mix(0.12, 1.0, uBurst);
-    return vec3(cos(th) * r, 1.6 + sin(th) * r, -2.0 + t * 1.4 + sin(t * PI) * s.z);
   }
 
   vec3 shapeOf(float id, float t, vec3 s) {
     if (id < 0.5) return escape(t, s);
     if (id < 1.5) return beam(t, s);
     if (id < 2.5) return hourglass(t, s);
-    if (id < 3.5) return scatter(t, s);
-    return burst(t, s);
+    return scatter(t, s);
   }
 
   float alphaOf(float id, float t) {
-    if (id > 2.5 && id < 3.5) return 0.0;
+    if (id > 2.5) return 0.0;
     // Hundreds of strands overlap in the escape trunk; keep it a thread, not a blowout
     if (id < 0.5 && t < TRUNK) return 0.06;
     return 1.0;
@@ -112,7 +103,6 @@ export const fiberFragment = /* glsl */ `
   uniform vec3 uViolet;
   uniform vec3 uPink;
   uniform vec3 uCyan;
-  uniform float uCool;
   uniform float uIntensity;
 
   varying float vT;
@@ -124,8 +114,6 @@ export const fiberFragment = /* glsl */ `
     vec3 col = mix(uBlue, uViolet, smoothstep(-0.25, 0.5, g));
     vec3 tip = mix(uPink, uCyan, step(0.5, vSeed.x));
     col = mix(col, tip, smoothstep(0.8, 1.0, vT) * 0.6);
-    // Final burst stage runs cooler (blue → cyan)
-    col = mix(col, mix(uBlue, uCyan, vT), uCool);
 
     float a = vAlpha * smoothstep(0.0, 0.04, vT) * (1.0 - 0.7 * smoothstep(0.85, 1.0, vT));
     a *= (0.45 + 0.55 * vSeed.z) * uIntensity;

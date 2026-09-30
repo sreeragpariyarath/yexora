@@ -8,7 +8,6 @@ import * as THREE from "three";
 import Fan, { type FanDrive } from "./Fan";
 import Fibers from "./Fibers";
 import Particles from "./Particles";
-import Tubes from "./Tubes";
 import { FAN_A, FAN_B, chapterAt, createFlowState, evaluate, type FlowState } from "./timeline";
 import useReducedMotion from "./useReducedMotion";
 
@@ -78,8 +77,8 @@ function CameraRig({ flowRef, reduced }: { flowRef: RefObject<FlowState>; reduce
 
   useFrame((state, dt) => {
     const f = flowRef.current;
-    _target.set(f.camX, f.targetY, 0);
-    _pos.set(f.camX, f.camY, f.camZ);
+    _target.set(f.camX, 0, 0);
+    _pos.set(f.camX, 0, f.camZ);
 
     // Pull back on narrow screens so the shapes still fit
     const aspect = state.size.width / state.size.height;
@@ -129,7 +128,6 @@ export default function FlowCanvas({ layoutRef }: FlowCanvasProps) {
       <Fan config={FAN_A} flowRef={flowRef} drive={driveFanA} />
       <Fan config={FAN_B} flowRef={flowRef} drive={driveFanB} />
       <Fibers flowRef={flowRef} />
-      <Tubes flowRef={flowRef} />
       <EffectComposer multisampling={0}>
         <Bloom
           mipmapBlur
