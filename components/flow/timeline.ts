@@ -81,10 +81,10 @@ export const FAN_B: FanConfig = {
   node: [3, 0, 0],
   wallX: WALL_B,
   free: 4,
-  spread: 5.5,
+  spread: 7.5,
   depth: 0.5,
-  // Blooms upward
-  bend: 5.5,
+  // Blooms evenly up and down (no bend)
+  bend: 0,
   // Trunk share ≈ its length share (13.5 of ~21.5 units) so points stay evenly spaced
   trunk: 0.6,
 };

@@ -24,9 +24,9 @@ export const fiberVertex = /* glsl */ `
 
   // 0 — a thread leaves wall B, reaches a node and opens into a narrow beam
   vec3 escape(float t, vec3 s) {
-    // Leaves wall B near its lower edge (fan B blooms upward)
-    vec3 a = vec3(uEscapeX, 1.2, 0.0);
-    vec3 n = vec3(uEscapeX + 4.0, 1.2, 0.0);
+    // Leaves the middle of wall B (fan B blooms evenly up and down)
+    vec3 a = vec3(uEscapeX, 0.0, 0.0);
+    vec3 n = vec3(uEscapeX + 4.0, 0.0, 0.0);
     if (t < TRUNK) return mix(a, n, t / TRUNK);
     float u = (t - TRUNK) / (1.0 - TRUNK);
     float th = s.x * 2.0 * PI;
