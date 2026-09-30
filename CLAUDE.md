@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Marketing/landing site for Yexora IT Solutions. Early stage: a single page (`app/page.tsx`) made of scroll sections over a fixed 3D scene (`ScrollFlow`), with the shared `Header` fixed on top. The page has a visually hidden `<h1>`. Nav links point to in-page anchors: `#about`, `#services` and `#works` exist; `#contact` doesn't yet.
+Marketing/landing site for Yexora IT Solutions. Early stage: a single page (`app/page.tsx`) made of scroll sections over a fixed 3D scene (`ScrollFlow`), with the shared `Header` fixed on top. The page has a visually hidden `<h1>`. Nav links point to in-page anchors (`#about`, `#services`, `#works`, `#contact`), all of which exist.
+
+**Content rules** (from the company's registration document and the owner): the company is "Yexora IT Solutions", located in "India" only (no city or state). Never show founder names. No game development and no training/internships for now. Services live in `components/flow/services.ts`; email, phone and location live in `components/contact.ts` (shared by the menu and the contact section; email and phone are still placeholders).
 
 ## Commands
 
@@ -40,15 +42,17 @@ There is no test framework configured.
 
 ## Scroll flow (3D)
 
-- The page is real `<section>`s scrolling over one fixed WebGL canvas: `ScrollFlow` renders a `fixed inset-0` `FlowCanvas` plus `FlowSections` (`sections.tsx`). The sections are Hero, About, Problem, Solution, Future and Product (with the dashboard). Copy sections pin their text with a `sticky top-0 h-screen` child, so none of their ancestors may be `overflow-hidden`. Headings are Poppins medium in mixed case; all copy is placeholder (TODO).
+- The page is real `<section>`s scrolling over one fixed WebGL canvas: `ScrollFlow` renders a `fixed inset-0` `FlowCanvas` plus `FlowSections` (`sections.tsx`). The sections are Hero, About, Problem, Services, Future, Works and Contact. Copy sections pin their text with a `sticky top-0 h-screen` child, so none of their ancestors may be `overflow-hidden`. Headings are Poppins medium in mixed case, rendered by the shared `CopyBlock` (eyebrow + scrambling title + body).
+- **Works** (`Works.tsx`): four video cards. Their files go in `public/works/work-1.mp4` … `work-4.mp4`; titles and categories in `WORKS` are placeholders. Each card slides in from the left, right or bottom via a scroll-set `--p` CSS var. Videos are muted, loop, and play only while at least 35% visible. A missing file shows a "Video coming soon" placeholder.
+- **Contact** (`Contact.tsx`): details plus a form. There is no backend; submitting opens a `mailto:` with the enquiry filled in.
 - **Chapter value `c`:** every `[data-chapter]` section is one chapter. `ScrollFlow` measures the sections' document tops (via `ResizeObserver`) into `layoutRef`. Each frame, `Driver` (a `useFrame` at priority -1) maps `window.scrollY` onto those tops, so `c = i` when section *i*'s top reaches the viewport top. Adding, removing or resizing a section shifts `c`, so retune `timeline.ts` when you do.
-- **Smoothness rule:** Lenis already eases `scrollY` every frame, so `Driver` uses it as-is. Don't damp scroll again in the canvas (that caused lag). Scrolling never re-renders React. The dashboard's rise and tilt are a CSS var (`--rise`) set from a scroll listener.
+- **Smoothness rule:** Lenis already eases `scrollY` every frame, so `Driver` uses it as-is. Don't damp scroll again in the canvas (that caused lag). Scrolling never re-renders React. The Works cards' entrance is a CSS var (`--p`) set from a scroll listener.
 - **`timeline.ts`** holds the world layout (`FAN_A`, `FAN_B`, `WALL_A`/`WALL_B`, `TAIL_X`) and the keyframe `track`s in `c` for the camera, each fan, the tail and the particles. `track` interpolates with smoothstep between keys. `evaluate()` writes everything into the shared mutable `FlowState`, which scene components read in `useFrame`.
 - **The chain:** the scene runs along +x and the camera pans right.
   - **Hero fan:** `Fan` with `FAN_A` grows in on load. This is time-based (`load`), advanced by capped frame time so a shader-compile stall doesn't skip it.
   - **Wall:** on scroll its strand ends land on a wall of glowing dots (`uWall`).
   - **Fan B:** a thread escapes that wall and fans out, bending down (`FAN_B`), then hits wall B.
-  - **Tail:** the tail `Fibers` escape wall B and morph through the shapes in `fiberShader.ts` (escape → beam → hourglass → scatter), with `tailRotZ` swinging the beam. Scatter is invisible, so the scene fades out behind the rising dashboard. The tubes interlude and the radial burst were removed at the user's request.
+  - **Tail:** the tail `Fibers` escape wall B and morph through the shapes in `fiberShader.ts` (escape → beam → hourglass → scatter), with `tailRotZ` swinging the beam. Scatter is invisible, so the scene fades out before the Works videos. The tubes interlude and the radial burst were removed at the user's request.
 - **Shaders:** fan and fibre positions are computed in vertex shaders (`fanShader.ts`, `fiberShader.ts`) from `t` along the strand plus a per-strand seed. The fan's wall dots use the same GLSL chunk evaluated at `t = 1`. In the tail, scatter has alpha 0, and morphs out of it fade in at the target shape rather than flying in.
 - **Loading and fallbacks:** the canvas is loaded with `next/dynamic({ ssr: false })`. It uses drei `PerformanceMonitor` to drop the dpr (1.5 → 1) on slow devices, runs bloom at half resolution, and has a gradient `fallback` for when WebGL is missing. Under reduced motion there is no intro grow, no pointer parallax and no scramble.
 - **Lint rule:** React Compiler lint (`react-hooks/immutability`) forbids mutating `useMemo` values or props. Declare three objects in JSX (`<shaderMaterial args={[params]} ref={…}>`) and mutate them through refs. Name ref props `…Ref` so the compiler treats them as refs.

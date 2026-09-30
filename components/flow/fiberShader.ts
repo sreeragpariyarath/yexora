@@ -1,5 +1,5 @@
 // The "tail" of the chain: fibres that escape wall B as a thin thread, become a
-// beam, pinch into an hourglass, then scatter and fade out behind the dashboard.
+// beam, pinch into an hourglass, then scatter and fade out before the Works videos.
 // Every strand's position is computed on the GPU from (t along the strand,
 // per-strand seed), so a morph is just a mix() of two shape functions.
 // Coordinates are local to the tail group (centred at TAIL_X in timeline.ts).

@@ -35,7 +35,7 @@ export function chapterAt(y: number, tops: number[], maxScroll: number) {
 // ---------------------------------------------------------------------------
 // World layout: the chain runs along +x and the camera pans right with scroll.
 // Fan A (hero) → wall A → escaping thread → Fan B → wall B → escaping thread →
-// tail fibres (beam → hourglass → scatter, fading out behind the dashboard).
+// tail fibres (beam → hourglass → scatter, fading out before the Works videos).
 
 export interface FanConfig {
   strands: number;
@@ -104,8 +104,8 @@ const T = {
     [3, 11],
     [3.4, 12],
     [4.2, 12.5],
-    // Product: ease back while the hourglass scatters behind the dashboard
-    [5.4, 14],
+    // Works: ease back while the hourglass scatters behind the videos
+    [5.12, 14],
   ]),
 
   fanAWall: track([
@@ -140,8 +140,8 @@ const T = {
     [3.05, SHAPE.beam],
     [4.0, SHAPE.beam],
     [4.35, SHAPE.hourglass],
-    [5.0, SHAPE.hourglass],
-    [5.35, SHAPE.scatter],
+    [4.85, SHAPE.hourglass],
+    [5.1, SHAPE.scatter],
   ]),
   // Beam swings from its diagonal up to near-vertical, then back flat for the hourglass
   tailRotZ: track([
@@ -156,7 +156,7 @@ const T = {
     [2, 1],
     [2.6, 0.5],
     [4, 0.35],
-    [5.4, 0.6],
+    [5.12, 0.6],
   ]),
 };
 

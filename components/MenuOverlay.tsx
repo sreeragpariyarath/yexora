@@ -5,6 +5,7 @@ import { useLenis } from "lenis/react";
 import MenuIcon from "./MenuIcon";
 import MenuLink from "./MenuLink";
 import SocialLinks from "./socials";
+import { EMAIL, PHONE } from "./contact";
 
 export interface NavItem {
   label: string;
@@ -20,10 +21,6 @@ interface MenuOverlayProps {
 // Slow-in / slow-out so the panel eases away and settles gently (no snap at either end)
 const DURATION = "duration-[1100ms]";
 const EASE = "ease-[cubic-bezier(0.76,0,0.24,1)]";
-
-// TODO: replace placeholder contact details with real ones (social URLs live in ./socials)
-const EMAIL = "contact@yexoraitsolutions.com";
-const PHONE = "+91 00000 00000";
 
 export default function MenuOverlay({ open, onClose, items }: MenuOverlayProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
