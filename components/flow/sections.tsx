@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { Plus } from "lucide-react";
 import Contact from "./Contact";
 import CopyBlock from "./CopyBlock";
 import { SERVICES } from "./services";
@@ -25,25 +23,7 @@ function Hero() {
           title="Immersive Tech & Software, Engineered to Scale"
           body="We build software, AR/VR experiences and AI solutions that move businesses forward."
           className="max-w-xl lg:max-w-none lg:w-[44vw]"
-        >
-          <div className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-3">
-            <Link
-              href="#contact"
-              className="group inline-flex items-center gap-3 rounded-full bg-white text-[#0b0d1a] pl-5 pr-1.5 py-1.5 font-poppins font-medium text-xs tracking-[0.12em] uppercase shadow-[0_0_30px_rgba(143,107,255,0.35)] transition-shadow hover:shadow-[0_0_40px_rgba(143,107,255,0.6)]"
-            >
-              Get started
-              <span className="w-8 h-8 rounded-full bg-linear-to-br from-violet-400 to-accent text-white flex items-center justify-center transition-transform group-hover:rotate-90">
-                <Plus className="w-4 h-4" strokeWidth={2.5} />
-              </span>
-            </Link>
-            <Link
-              href="#contact"
-              className="inline-flex items-center rounded-full px-5 py-3.5 font-poppins font-medium text-xs tracking-[0.12em] uppercase text-white bg-white/[0.06] border border-white/10 backdrop-blur-md hover:bg-white/15 transition-colors"
-            >
-              Request demo
-            </Link>
-          </div>
-        </CopyBlock>
+        />
       </div>
     </section>
   );
