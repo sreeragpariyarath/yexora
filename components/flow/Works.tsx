@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Volume2, VolumeX } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import CopyBlock from "./CopyBlock";
 import useReducedMotion from "./useReducedMotion";
 
@@ -38,21 +37,8 @@ const PLACE: Record<From, string> = {
 
 // A card can become the active one once this much of it is on screen
 const MIN_VISIBLE = 0.55;
-// Volume fade when the sound hands over from one card to the next
-const FADE_MS = 400;
 
-interface WorkCardProps {
-  work: Work;
-  active: boolean;
-  /** Play with sound (false: muted, because the visitor muted it or the browser blocked it) */
-  sound: boolean;
-  /** The browser refused to play with sound (no click/tap/key press on the page yet) */
-  blocked: boolean;
-  onBlocked: () => void;
-  onToggleSound: (video: HTMLVideoElement) => void;
-}
-
-function WorkCard({ work, active, sound, blocked, onBlocked, onToggleSound }: WorkCardProps) {
+function WorkCard({ work, active }: { work: Work; active: boolean }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [failed, setFailed] = useState(false);
 
@@ -65,46 +51,13 @@ function WorkCard({ work, active, sound, blocked, onBlocked, onToggleSound }: Wo
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  // Only the active card plays; the sound fades in on it and out on the one it replaces
+  // Only the active card plays (muted, so browsers always allow it)
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    let frame = 0;
-    let cancelled = false;
-    const fadeTo = (to: number, done?: () => void) => {
-      const from = video.volume;
-      const start = performance.now();
-      const step = (now: number) => {
-        const k = Math.min((now - start) / FADE_MS, 1);
-        video.volume = Math.min(Math.max(from + (to - from) * k, 0), 1);
-        if (k < 1) frame = requestAnimationFrame(step);
-        else done?.();
-      };
-      frame = requestAnimationFrame(step);
-    };
-
-    if (active) {
-      video.muted = !sound;
-      if (video.paused) video.volume = 0;
-      video
-        .play()
-        .then(() => {
-          if (!cancelled) fadeTo(1);
-        })
-        .catch((err: unknown) => {
-          // Sound needs a prior click/tap/key press; the parent retries muted
-          if (!cancelled && !video.muted && err instanceof DOMException && err.name === "NotAllowedError") onBlocked();
-        });
-    } else if (!video.paused) {
-      fadeTo(0, () => video.pause());
-    }
-    return () => {
-      cancelled = true;
-      cancelAnimationFrame(frame);
-    };
-  }, [active, sound, onBlocked]);
-
-  const muted = !sound;
+    if (active) video.play().catch(() => {});
+    else video.pause();
+  }, [active]);
 
   return (
     <figure
@@ -124,6 +77,8 @@ function WorkCard({ work, active, sound, blocked, onBlocked, onToggleSound }: Wo
               ref={videoRef}
               src={work.src}
               poster={work.poster}
+              aria-label={work.title}
+              muted
               loop
               playsInline
               preload="metadata"
@@ -139,52 +94,22 @@ function WorkCard({ work, active, sound, blocked, onBlocked, onToggleSound }: Wo
                 active ? "opacity-0" : "opacity-60"
               }`}
             />
-            <button
-              type="button"
-              data-sound-toggle
-              tabIndex={active ? 0 : -1}
-              aria-hidden={!active}
-              aria-pressed={!muted}
-              aria-label={muted ? "Turn sound on" : "Turn sound off"}
-              onClick={() => videoRef.current && onToggleSound(videoRef.current)}
-              className={`absolute left-4 bottom-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/45 backdrop-blur-md px-3.5 py-2 font-poppins text-[11px] uppercase tracking-[0.16em] text-white transition-opacity duration-500 hover:bg-black/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
-                active ? "opacity-100" : "opacity-0 pointer-events-none"
-              }`}
-            >
-              {muted ? <VolumeX aria-hidden className="w-4 h-4" /> : <Volume2 aria-hidden className="w-4 h-4" />}
-              {blocked ? "Tap for sound" : muted ? "Sound off" : "Sound on"}
-            </button>
           </>
         )}
       </div>
-      <figcaption
-        className={`mt-4 flex items-center justify-between gap-4 font-poppins transition-colors duration-700 ${
-          active ? "text-white" : "text-white/50"
-        }`}
-      >
-        <span className="text-lg lg:text-[1.35vw] font-medium tracking-tight">{work.title}</span>
-        <span className="text-[11px] lg:text-xs uppercase tracking-[0.18em] opacity-60 inline-flex items-center gap-2.5">
-          <span aria-hidden className="w-2 h-2 rotate-45 border border-current" />
-          {work.category}
-        </span>
-      </figcaption>
     </figure>
   );
 }
 
 /**
- * Three work videos that slide in from the left, right and bottom as you scroll. The card
- * nearest the middle of the screen is the active one: it plays with sound and is fully lit,
- * the others pause and dim. Browsers only allow sound after a click/tap/key press on the
- * page, so until then the active video plays muted with a "Tap for sound" pill.
+ * Three muted work videos that slide in from the left, right and bottom as you scroll.
+ * The card nearest the middle of the screen is the active one: it plays and is fully lit,
+ * the others pause and dim.
  */
 export default function Works() {
   const listRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
   const [active, setActive] = useState(-1);
-  const [blocked, setBlocked] = useState(false);
-  const [userMuted, setUserMuted] = useState(false);
-  const sound = !blocked && !userMuted;
 
   useEffect(() => {
     const list = listRef.current;
@@ -224,41 +149,6 @@ export default function Works() {
     };
   }, [reduced]);
 
-  // Sound was blocked: the visitor's first click, tap or key press anywhere turns it on.
-  // Unmute inside the gesture itself, as Safari requires.
-  useEffect(() => {
-    if (!blocked) return;
-    const unlock = (e: Event) => {
-      if (e.target instanceof Element && e.target.closest("[data-sound-toggle]")) return;
-      const video = listRef.current?.querySelector<HTMLVideoElement>('[data-active="1"] video');
-      if (video && !userMuted) {
-        video.muted = false;
-        video.play().catch(() => {});
-      }
-      setBlocked(false);
-    };
-    const events = ["pointerup", "touchend", "keydown"] as const;
-    events.forEach((type) => window.addEventListener(type, unlock, { passive: true }));
-    return () => events.forEach((type) => window.removeEventListener(type, unlock));
-  }, [blocked, userMuted]);
-
-  const onBlocked = useCallback(() => setBlocked(true), []);
-
-  const onToggleSound = useCallback(
-    (video: HTMLVideoElement) => {
-      const turnOn = blocked || userMuted;
-      if (turnOn) {
-        video.muted = false;
-        video.play().catch(() => {});
-      } else {
-        video.muted = true;
-      }
-      setBlocked(false);
-      setUserMuted(!turnOn);
-    },
-    [blocked, userMuted]
-  );
-
   return (
     <section data-chapter id="works" aria-label="Our work" className="relative w-full px-6 sm:px-10 lg:px-[6vw] pt-[30vh] pb-[20vh]">
       <CopyBlock
@@ -269,15 +159,7 @@ export default function Works() {
       />
       <div ref={listRef} className="mt-[12vh] flex flex-col gap-[14vh] [perspective:1400px] overflow-x-clip">
         {WORKS.map((work, i) => (
-          <WorkCard
-            key={work.title}
-            work={work}
-            active={active === i}
-            sound={sound}
-            blocked={blocked}
-            onBlocked={onBlocked}
-            onToggleSound={onToggleSound}
-          />
+          <WorkCard key={work.title} work={work} active={active === i} />
         ))}
       </div>
     </section>

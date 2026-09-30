@@ -5,7 +5,7 @@ import useReducedMotion from "./useReducedMotion";
 
 interface CopyBlockProps {
   eyebrow: string;
-  title: string;
+  title: ReactNode;
   body?: string;
   hero?: boolean;
   /**
