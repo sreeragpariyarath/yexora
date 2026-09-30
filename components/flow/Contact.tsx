@@ -8,6 +8,7 @@ import SocialLinks from "@/components/socials";
 import { COMPANY, EMAIL, LOCATION, PHONE } from "@/components/contact";
 import logoMark from "@/public/logo-mark.png";
 import CopyBlock from "./CopyBlock";
+import ServiceSelect from "./ServiceSelect";
 import { SERVICES } from "./services";
 
 const FOOTER_LINKS = [
@@ -20,9 +21,9 @@ const FOOTER_LINKS = [
 // Floating-label fields: the label sits in the field and floats up on focus or once
 // filled (CSS only, via `peer` + `placeholder-shown`; the placeholder is a single space)
 const INPUT =
-  "peer w-full rounded-xl bg-white/[0.035] border border-white/10 px-4 pt-6 pb-2.5 font-poppins text-sm text-white outline-none transition-[border-color,background-color,box-shadow] duration-300 hover:border-white/20 focus:border-violet-400/70 focus:bg-white/[0.06] focus:shadow-[0_0_0_4px_rgba(139,92,246,0.14)]";
+  "peer w-full rounded-xl bg-white/[0.035] border border-white/10 px-4 pt-6 pb-2.5 font-poppins text-sm text-white outline-none transition-[border-color,background-color,box-shadow] duration-300 hover:border-white/20 focus:border-accent/70 focus:bg-white/[0.06] focus:shadow-[0_0_0_4px_rgba(47,107,255,0.18)]";
 const LABEL =
-  "pointer-events-none absolute left-4 top-2 font-poppins text-[10px] uppercase tracking-[0.16em] text-white/45 transition-all duration-200 peer-placeholder-shown:top-[1.1rem] peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-focus:top-2 peer-focus:text-[10px] peer-focus:uppercase peer-focus:tracking-[0.16em] peer-focus:text-violet-300";
+  "pointer-events-none absolute left-4 top-2 font-poppins text-[10px] uppercase tracking-[0.16em] text-white/45 transition-all duration-200 peer-placeholder-shown:top-[1.1rem] peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-focus:top-2 peer-focus:text-[10px] peer-focus:uppercase peer-focus:tracking-[0.16em] peer-focus:text-blue-300";
 
 function Field({ name, label, type = "text", autoComplete, multiline = false }: {
   name: string;
@@ -54,7 +55,7 @@ function Detail({ icon: Icon, label, children, href }: {
 }) {
   const inner = (
     <>
-      <span className="w-11 h-11 shrink-0 rounded-full flex items-center justify-center text-white bg-linear-to-br from-violet-500/35 to-accent/25 ring-1 ring-white/15 shadow-[0_0_24px_rgba(139,92,246,0.25)]">
+      <span className="w-11 h-11 shrink-0 rounded-full flex items-center justify-center text-white bg-linear-to-br from-accent/35 to-blue-500/25 ring-1 ring-white/15 shadow-[0_0_24px_rgba(47,107,255,0.25)]">
         <Icon className="w-[18px] h-[18px]" />
       </span>
       <span className="min-w-0 text-left">
@@ -74,7 +75,7 @@ function Detail({ icon: Icon, label, children, href }: {
   return href ? (
     <a
       href={href}
-      className={`${box} hover:-translate-y-0.5 hover:border-violet-400/40 hover:bg-white/[0.05] hover:shadow-[0_10px_40px_-12px_rgba(139,92,246,0.45)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-400`}
+      className={`${box} hover:-translate-y-0.5 hover:border-accent/40 hover:bg-white/[0.05] hover:shadow-[0_10px_40px_-12px_rgba(47,107,255,0.45)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent`}
     >
       {inner}
     </a>
@@ -114,7 +115,7 @@ export default function Contact() {
             title={
               <>
                 Let&apos;s Talk About{" "}
-                <span className="bg-linear-to-r from-violet-300 via-violet-400 to-[#7b9bff] bg-clip-text text-transparent">
+                <span className="bg-linear-to-r from-blue-300 via-accent to-[#7b9bff] bg-clip-text text-transparent">
                   Your Project
                 </span>
               </>
@@ -127,9 +128,6 @@ export default function Contact() {
             <Detail icon={Mail} label="Email" href={`mailto:${EMAIL}`}>
               {EMAIL}
             </Detail>
-            <Detail icon={Phone} label="Phone" href={`tel:${PHONE.replace(/\s/g, "")}`}>
-              {PHONE}
-            </Detail>
             <Detail icon={MapPin} label="Location">
               {LOCATION}
             </Detail>
@@ -140,13 +138,13 @@ export default function Contact() {
             <span aria-hidden className="w-10 h-px bg-white/30" />
             <SocialLinks
               iconClassName="w-4 h-4"
-              className="w-10 h-10 rounded-full border border-white/15 bg-white/[0.03] flex items-center justify-center transition-[border-color,background-color] hover:border-violet-400/60 hover:bg-violet-500/10"
+              className="w-10 h-10 rounded-full border border-white/15 bg-white/[0.03] flex items-center justify-center transition-[border-color,background-color] hover:border-accent/60 hover:bg-accent/10"
             />
           </div>
         </div>
 
         {/* Gradient hairline border around the form card */}
-        <div className="relative rounded-[1.75rem] p-px bg-linear-to-br from-violet-400/50 via-white/10 to-accent/40 shadow-[0_0_100px_-10px_rgba(143,107,255,0.3)]">
+        <div className="relative rounded-[1.75rem] p-px bg-linear-to-br from-accent/50 via-white/10 to-blue-400/40 shadow-[0_0_100px_-10px_rgba(47,107,255,0.3)]">
           <form onSubmit={onSubmit} className="rounded-[calc(1.75rem-1px)] bg-[#080a17]/95 backdrop-blur-xl p-6 sm:p-9 flex flex-col gap-5">
             <div className="font-poppins">
               <h3 className="text-xl lg:text-[1.5vw] font-medium text-white tracking-tight">Start a project</h3>
@@ -158,37 +156,22 @@ export default function Contact() {
               <Field name="email" label="Email address" type="email" autoComplete="email" />
             </div>
 
-            {/* Service chips instead of a <select>: real checkboxes, so several can be picked */}
-            <fieldset>
-              <legend className="font-poppins text-[10px] uppercase tracking-[0.16em] text-white/45 mb-3">What do you need?</legend>
-              <div className="flex flex-wrap gap-2">
-                {SERVICES.map((s) => (
-                  <label
-                    key={s}
-                    className="group cursor-pointer select-none inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.03] px-3.5 py-2 font-poppins text-xs text-white/70 transition-[border-color,background-color,color,box-shadow] duration-200 hover:border-white/30 hover:text-white has-checked:border-violet-400/70 has-checked:bg-violet-500/20 has-checked:text-white has-checked:shadow-[0_0_20px_-4px_rgba(139,92,246,0.6)] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-violet-400"
-                  >
-                    <input type="checkbox" name="service" value={s} className="sr-only" />
-                    <span
-                      aria-hidden
-                      className="w-1.5 h-1.5 rounded-full bg-white/25 transition-[background-color,box-shadow] group-has-checked:bg-violet-300 group-has-checked:shadow-[0_0_8px_rgba(196,181,253,0.9)]"
-                    />
-                    {s}
-                  </label>
-                ))}
-              </div>
-            </fieldset>
+            {/* Dropdown instead of chips: several services can be picked (see ServiceSelect) */}
+            <ServiceSelect name="service" label="What do you need?" options={SERVICES} />
 
             <Field name="message" label="Tell us about your project" multiline />
 
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-1">
+              {/* Same glass pill as the header's "Get started" */}
               <button
                 type="submit"
-                className="group w-full sm:w-auto justify-between sm:justify-start inline-flex items-center gap-3 rounded-full bg-white text-[#0b0d1a] pl-5 pr-1.5 py-1.5 font-poppins font-medium text-xs tracking-[0.12em] uppercase shadow-[0_0_30px_rgba(143,107,255,0.35)] transition-shadow hover:shadow-[0_0_40px_rgba(143,107,255,0.6)] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-400"
+                className="group w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-full px-6 py-3 font-poppins font-medium text-xs tracking-[0.14em] uppercase text-white bg-white/10 border border-white/15 backdrop-blur-md cursor-pointer transition-[background-color,border-color,box-shadow] duration-300 hover:bg-white/20 hover:border-white/30 hover:shadow-[0_0_32px_-6px_rgba(47,107,255,0.65)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               >
                 Send enquiry
-                <span className="w-8 h-8 rounded-full bg-linear-to-br from-violet-400 to-accent text-white flex items-center justify-center transition-transform group-hover:rotate-45">
-                  <ArrowUpRight className="w-4 h-4" strokeWidth={2.5} />
-                </span>
+                <ArrowUpRight
+                  aria-hidden
+                  className="w-4 h-4 transition-[translate] duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                />
               </button>
               <span className="font-poppins text-xs text-white/40 text-center sm:text-left">Opens your email app</span>
             </div>

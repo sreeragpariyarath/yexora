@@ -78,7 +78,7 @@ function sharedUniforms(config: FanConfig) {
     uWall: { value: 0 },
     uAlpha: { value: 1 },
     uTime: { value: 0 },
-    uLilac: { value: new THREE.Color("#d9ccff") },
+    uLilac: { value: new THREE.Color("#d0e2ff") },
   };
 }
 
@@ -97,8 +97,8 @@ export default function Fan({ config, flowRef, drive }: FanProps) {
       blending: THREE.AdditiveBlending,
       uniforms: {
         ...sharedUniforms(config),
-        uBlue: { value: new THREE.Color("#3d6bff") },
-        uViolet: { value: new THREE.Color("#8f6bff") },
+        uBlue: { value: new THREE.Color("#2f6bff") },
+        uViolet: { value: new THREE.Color("#5995ff") },
       },
     }),
     [config]

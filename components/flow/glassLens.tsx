@@ -94,12 +94,12 @@ const fragmentShader = /* glsl */ `
         col.b = mix(col.b, scene(uv + offUv * 1.07).b, t * 0.85);
       }
 
-      // Glass body: a little more saturated, a slight milky lift, faint lilac so empty areas
+      // Glass body: a little more saturated, a slight milky lift, faint blue so empty areas
       // still read as glass. Values are small because this runs in linear colour (a 1%
       // linear lift already shows as a clear sheen once encoded for the screen).
       float luma = dot(col, vec3(0.2126, 0.7152, 0.0722));
       col = mix(vec3(luma), col, 1.25);
-      col = mix(col, vec3(1.0), 0.01) * 1.05 + vec3(0.0035, 0.003, 0.0075);
+      col = mix(col, vec3(1.0), 0.01) * 1.05 + vec3(0.0015, 0.0035, 0.008);
 
       // Light: a hairline at the rim and a glint on the bezel facing the light
       float rim = smoothstep(2.0, 0.0, depth);

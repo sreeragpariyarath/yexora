@@ -18,8 +18,8 @@ interface Work {
 // TODO: real titles and categories for each video.
 const WORKS: Work[] = [
   { title: "Project One", category: "Immersive experience", src: "/works/work1.mp4", from: "left" },
-  { title: "Project Two", category: "Web platform", src: "/works/work1.mp4", from: "right" },
-  { title: "Project Three", category: "AR / VR solution", src: "/works/work1.mp4", from: "bottom" },
+  { title: "Project Two", category: "Web platform", src: "/works/work2.mp4", from: "right" },
+  { title: "Project Three", category: "AR / VR solution", src: "/works/work3.mp4", from: "bottom" },
 ];
 
 // Entrance per direction, driven by the --p CSS var (0 → 1) so scrolling never re-renders React
@@ -66,9 +66,9 @@ function WorkCard({ work, active }: { work: Work; active: boolean }) {
       className={`w-full will-change-transform origin-bottom ${PLACE[work.from]}`}
       style={{ transform: ENTER[work.from], opacity: "var(--p, 0)" }}
     >
-      <div className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 bg-[#0c0f1f]/80 backdrop-blur-xl shadow-[0_0_80px_rgba(143,107,255,0.22)]">
+      <div className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 bg-[#0c0f1f]/80 backdrop-blur-xl shadow-[0_0_80px_rgba(47,107,255,0.25)]">
         {failed ? (
-          <div className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(ellipse_at_30%_40%,rgba(139,92,246,0.35),transparent_60%),radial-gradient(ellipse_at_75%_70%,rgba(47,107,255,0.3),transparent_55%)]">
+          <div className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(ellipse_at_30%_40%,rgba(47,107,255,0.35),transparent_60%),radial-gradient(ellipse_at_75%_70%,rgba(47,107,255,0.25),transparent_55%)]">
             <span className="font-poppins text-xs tracking-[0.18em] uppercase text-white/60">Video coming soon</span>
           </div>
         ) : (

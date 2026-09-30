@@ -65,7 +65,7 @@ export default function FlowSections() {
             <ul className="mt-6 grid sm:grid-cols-2 gap-3 text-left font-poppins text-sm lg:text-[0.95vw] text-white/90">
               {SERVICES.map((s) => (
                 <li key={s} className="glass-tile flex items-center gap-3 px-4 py-3">
-                  <span aria-hidden className="w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_10px_rgba(200,185,255,0.95)] shrink-0" />
+                  <span aria-hidden className="w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_10px_rgba(47,107,255,0.95)] shrink-0" />
                   {s}
                 </li>
               ))}

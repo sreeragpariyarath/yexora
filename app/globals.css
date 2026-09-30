@@ -32,6 +32,23 @@
   display: none;
 }
 
+/* Browser autofill repaints fields light blue with dark text. The near-endless background
+   transition keeps each field's own translucent dark fill (so autofilled fields match the
+   rest), and the text stays white. Border/shadow are listed so hover and focus still ease. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fff;
+  caret-color: #fff;
+  transition:
+    background-color 9999s ease-out 0s,
+    border-color 300ms,
+    box-shadow 300ms;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -68,10 +85,10 @@ body {
     inset 1.5px 0 1px rgba(255, 255, 255, 0.22),
     inset -1.5px 0 1px rgba(255, 255, 255, 0.16),
     inset 0 0 22px rgba(255, 255, 255, 0.16),
-    inset 0 0 60px rgba(210, 195, 255, 0.08),
+    inset 0 0 60px rgba(47, 107, 255, 0.1),
     0 24px 60px rgba(5, 7, 19, 0.4),
     0 2px 8px rgba(5, 7, 19, 0.25);
-  text-shadow: 0 1px 14px rgba(20, 12, 60, 0.45);
+  text-shadow: 0 1px 14px rgba(10, 20, 50, 0.45);
 }
 
 .liquid-glass::before {
@@ -82,10 +99,10 @@ body {
   padding: 1.5px;
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.85) 0%,
-    rgba(255, 255, 255, 0.45) 30%,
-    rgba(255, 255, 255, 0.28) 65%,
-    rgba(255, 255, 255, 0.55) 100%
+    rgba(165, 205, 255, 0.9) 0%,
+    rgba(80, 145, 255, 0.65) 30%,
+    rgba(47, 107, 255, 0.4) 65%,
+    rgba(75, 140, 255, 0.65) 100%
   );
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
@@ -136,7 +153,7 @@ html.webgl-glass .liquid-glass::after {
 /* Respect "Reduce transparency": a solid, readable panel instead of glass. */
 @media (prefers-reduced-transparency: reduce) {
   .liquid-glass {
-    background: rgba(24, 18, 52, 0.92);
+    background: rgba(10, 18, 44, 0.92);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
