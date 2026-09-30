@@ -11,6 +11,7 @@ export const fiberVertex = /* glsl */ `
   uniform float uTime;
   uniform float uGrow;
   uniform float uEscapeX;
+  uniform float uThreadX;
 
   attribute float aT;
   attribute vec3 aSeed;
@@ -20,17 +21,18 @@ export const fiberVertex = /* glsl */ `
   varying float vAlpha;
 
   #define PI 3.14159265
-  #define TRUNK 0.22
+  // Trunk share ≈ its length share (thread from fan B's node to this node vs the spread)
+  #define TRUNK 0.32
 
-  // 0 — a thread leaves wall B, reaches a node and opens into a narrow beam
+  // 0 — like fan B's thread: starts at fan B's node and runs along its centre strand,
+  // through wall B, to a node where it gently opens into a narrow beam
   vec3 escape(float t, vec3 s) {
-    // Leaves the middle of wall B (fan B blooms evenly up and down)
-    vec3 a = vec3(uEscapeX, 0.0, 0.0);
+    vec3 a = vec3(uThreadX, 0.0, 0.0);
     vec3 n = vec3(uEscapeX + 4.0, 0.0, 0.0);
     if (t < TRUNK) return mix(a, n, t / TRUNK);
     float u = (t - TRUNK) / (1.0 - TRUNK);
     float th = s.x * 2.0 * PI;
-    float r = sqrt(s.y) * (0.08 + 2.0 * pow(u, 2.2));
+    float r = sqrt(s.y) * (0.03 + 2.4 * pow(u, 1.8));
     return vec3(mix(n.x, 14.0, u), n.y + sin(th) * r + u * 1.2, cos(th) * r * 0.5);
   }
 
@@ -76,6 +78,9 @@ export const fiberVertex = /* glsl */ `
       float tip = (1.0 - smoothstep(0.0, 0.06, uGrow * 1.08 - t)) * step(uGrow, 0.995);
       return mix(0.004, 0.06, smoothstep(0.55, 1.0, t / TRUNK)) + tip * 0.04;
     }
+    // Just past the node the strands are still bunched; ramp their light up as they
+    // open, or hundreds of them stack into a solid white bar
+    if (id < 0.5) return mix(0.06, 1.0, smoothstep(0.0, 0.35, (t - TRUNK) / (1.0 - TRUNK)));
     return 1.0;
   }
 
@@ -95,7 +100,10 @@ export const fiberVertex = /* glsl */ `
     p.z += wobble * 0.7;
 
     vAlpha = mix(alphaOf(uFrom, aT), alphaOf(uTo, aT), m);
-    vAlpha *= 1.0 - smoothstep(uGrow * 1.08 - 0.08, uGrow * 1.08, aT);
+    // Draw-in front; past the trunk each strand's front is offset a little so the
+    // growing beam ends in a feathered tip instead of one blunt edge
+    float front = uGrow * 1.08 - (aT > TRUNK ? aSeed.z * 0.06 : 0.0);
+    vAlpha *= 1.0 - smoothstep(front - 0.08, front, aT);
     vT = aT;
     vSeed = aSeed;
 

@@ -5,7 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { fiberFragment, fiberVertex } from "./fiberShader";
 import { mulberry32 } from "./random";
-import { TAIL_X, WALL_B, type FlowState } from "./timeline";
+import { FAN_B, TAIL_X, WALL_B, type FlowState } from "./timeline";
 
 const STRANDS = 420;
 const POINTS = 96;
@@ -55,6 +55,7 @@ export default function Fibers({ flowRef }: { flowRef: RefObject<FlowState> }) {
         uTime: { value: 0 },
         uGrow: { value: 0 },
         uEscapeX: { value: WALL_B - TAIL_X },
+        uThreadX: { value: FAN_B.node[0] - TAIL_X },
         uIntensity: { value: 0.55 },
         uBlue: { value: new THREE.Color("#2f6bff") },
         uViolet: { value: new THREE.Color("#8b5cf6") },

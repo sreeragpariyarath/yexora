@@ -135,8 +135,8 @@ const T = {
   ]),
 
   tailGrow: track([
-    [2.1, 0],
-    [2.55, 1],
+    [2.0, 0],
+    [2.6, 1],
   ]),
   // Continuous shape position: integer = a shape, fraction = morph to the next one
   tailShape: track([
