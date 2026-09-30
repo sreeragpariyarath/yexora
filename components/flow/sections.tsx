@@ -19,6 +19,7 @@ function Hero() {
       <div className="h-full flex items-end justify-center text-center px-6 sm:px-10 pb-[14vh] lg:items-center lg:justify-end lg:text-left lg:pb-0 lg:pr-[6vw]">
         <CopyBlock
           hero
+          glass
           eyebrow="Yexora IT Solutions"
           title="Immersive Tech & Software, Engineered to Scale"
           body="We build software, AR/VR experiences and AI solutions that move businesses forward."
@@ -37,10 +38,11 @@ export default function FlowSections() {
       <section data-chapter id="about" className="relative h-[220vh] w-full">
         <div className={`${PIN} lg:items-center lg:justify-start lg:text-left lg:pl-[30vw]`}>
           <CopyBlock
+            glass
             eyebrow="About us"
             title="One Team. Every Layer of Technology."
             body="Yexora IT Solutions is an Indian technology company bringing software, immersive tech and AI under one roof — from idea to launch and beyond."
-            className="max-w-xl lg:max-w-[30vw]"
+            className="max-w-xl lg:max-w-[34vw]"
           />
         </div>
       </section>
@@ -48,17 +50,18 @@ export default function FlowSections() {
       <section data-chapter id="problem" aria-label="The challenge" className="relative h-[220vh] w-full">
         <div className={`${PIN} lg:items-end lg:justify-start lg:text-left lg:pl-[22vw] lg:pb-[16vh]`}>
           <CopyBlock
+            glass
             eyebrow="The challenge"
             title="Technology Is Complex. We Make It Simple."
             body="Too many vendors, disconnected tools and slow delivery hold ambitious businesses back."
-            className="max-w-xl lg:max-w-[30vw]"
+            className="max-w-xl lg:max-w-[34vw]"
           />
         </div>
       </section>
 
       <section data-chapter id="services" className="relative h-[180vh] w-full">
         <div className={`${PIN} lg:items-center lg:justify-center lg:text-left lg:pl-[12vw]`}>
-          <CopyBlock eyebrow="What we do" title="Built End-to-End." className="max-w-xl lg:max-w-[36vw]">
+          <CopyBlock glass eyebrow="What we do" title="Built End-to-End." className="max-w-xl lg:max-w-[40vw]">
             <ul className="mt-6 grid sm:grid-cols-2 gap-x-8 gap-y-3 text-left font-poppins text-sm lg:text-[0.95vw] text-white/80">
               {SERVICES.map((s) => (
                 <li key={s} className="flex items-center gap-3 border-b border-white/10 pb-3">
@@ -74,9 +77,10 @@ export default function FlowSections() {
       <section data-chapter id="future" aria-label="What's next" className="relative h-[200vh] w-full">
         <div className={`${PIN} lg:items-end lg:pb-[18vh]`}>
           <CopyBlock
+            glass
             eyebrow="What's next"
             title="The Future Is Immersive. Let's Build It Together."
-            className="max-w-xl lg:max-w-[34vw]"
+            className="max-w-xl lg:max-w-[42vw]"
           />
         </div>
       </section>

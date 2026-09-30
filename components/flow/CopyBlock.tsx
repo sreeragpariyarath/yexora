@@ -8,16 +8,26 @@ interface CopyBlockProps {
   title: string;
   body?: string;
   hero?: boolean;
+  /**
+   * Sit the copy on a liquid-glass panel. Use it over the 3D fibres: thin diagonal
+   * fibres crossing straight lines of text make it look tilted (the Zöllner illusion),
+   * and the frosted glass blurs them out right behind the text.
+   */
+  glass?: boolean;
   children?: ReactNode;
   className?: string;
 }
 
-/**
- * Eyebrow + title + body. Fades up once the first time it scrolls into view.
- * A soft dark glow sits behind the text: thin diagonal fibres crossing straight lines
- * of text make it look tilted (the Zöllner illusion), so they're dimmed right behind it.
- */
-export default function CopyBlock({ eyebrow, title, body, hero = false, children, className = "" }: CopyBlockProps) {
+/** Eyebrow + title + body. Fades up once the first time it scrolls into view. */
+export default function CopyBlock({
+  eyebrow,
+  title,
+  body,
+  hero = false,
+  glass = false,
+  children,
+  className = "",
+}: CopyBlockProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [seen, setSeen] = useState(false);
   const reduced = useReducedMotion();
@@ -44,13 +54,9 @@ export default function CopyBlock({ eyebrow, title, body, hero = false, children
     <div
       ref={ref}
       className={`relative isolate text-white transition-[opacity,translate] duration-1000 ease-out ${
-        shown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-      } ${className}`}
+        glass ? "liquid-glass p-7 sm:p-9 lg:p-[2.5vw]" : ""
+      } ${shown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"} ${className}`}
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -z-10 -inset-x-[18%] -inset-y-[45%] bg-[radial-gradient(closest-side,rgba(5,7,19,0.82),rgba(5,7,19,0.55)_55%,transparent)]"
-      />
       <p className="font-poppins font-medium uppercase text-[11px] lg:text-xs tracking-[0.18em] text-white/60 inline-flex items-center gap-2.5">
         <span aria-hidden className="w-2 h-2 rotate-45 border border-white/70" />
         {eyebrow}

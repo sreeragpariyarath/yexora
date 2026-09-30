@@ -41,3 +41,58 @@ body {
 .font-bebas {
   font-family: 'Bebas Neue', Arial, sans-serif;
 }
+
+/*
+  Liquid glass panel (used behind copy over the 3D fibres). Layers:
+  frosted body (heavy blur + saturation over a faint white tint) → soft specular
+  sheen (::after) → gradient rim that catches light at opposite corners (::before,
+  masked to a 1px ring) → crisp inner top highlight and a deep floating shadow.
+*/
+.liquid-glass {
+  position: relative;
+  isolation: isolate;
+  border-radius: 28px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.035) 45%, rgba(255, 255, 255, 0.06) 100%);
+  -webkit-backdrop-filter: blur(22px) saturate(170%) brightness(0.72);
+  backdrop-filter: blur(22px) saturate(170%) brightness(0.72);
+  box-shadow:
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0.5px rgba(255, 255, 255, 0.08),
+    inset 0 0 28px rgba(255, 255, 255, 0.05),
+    0 24px 64px rgba(5, 7, 19, 0.55),
+    0 2px 6px rgba(5, 7, 19, 0.35);
+}
+
+.liquid-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    140deg,
+    rgba(255, 255, 255, 0.75) 0%,
+    rgba(255, 255, 255, 0.18) 22%,
+    rgba(255, 255, 255, 0.04) 50%,
+    rgba(200, 180, 255, 0.2) 78%,
+    rgba(255, 255, 255, 0.55) 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.liquid-glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(120% 70% at 15% 0%, rgba(255, 255, 255, 0.14), transparent 55%),
+    radial-gradient(80% 60% at 100% 100%, rgba(160, 130, 255, 0.08), transparent 60%);
+  pointer-events: none;
+  z-index: -1;
+}
