@@ -111,8 +111,7 @@ function Fallback() {
 export default function FlowCanvas({ layoutRef }: FlowCanvasProps) {
   const flowRef = useRef<FlowState>(createFlowState());
   const reduced = useReducedMotion();
-  // Render sharper than the screen (crisper hairlines); slow devices step down, but not to 1×
-  const [dpr, setDpr] = useState(2);
+  const [dpr, setDpr] = useState(1.5);
 
   return (
     <Canvas
@@ -122,7 +121,7 @@ export default function FlowCanvas({ layoutRef }: FlowCanvasProps) {
       fallback={<Fallback />}
     >
       {/* Drop resolution on slow devices instead of dropping frames */}
-      <PerformanceMonitor onDecline={() => setDpr(1.25)} onIncline={() => setDpr(2)} />
+      <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(1.5)} />
       <color attach="background" args={["#000000"]} />
       <Driver layoutRef={layoutRef} flowRef={flowRef} reduced={reduced} />
       <CameraRig flowRef={flowRef} reduced={reduced} />
@@ -130,8 +129,7 @@ export default function FlowCanvas({ layoutRef }: FlowCanvasProps) {
       <Fan config={FAN_A} flowRef={flowRef} drive={driveFanA} />
       <Fan config={FAN_B} flowRef={flowRef} drive={driveFanB} />
       <Fibers flowRef={flowRef} />
-      {/* MSAA smooths the 1px fibre lines; without it shallow lines break into pixel stair-steps */}
-      <EffectComposer multisampling={4}>
+      <EffectComposer multisampling={0}>
         <Bloom
           mipmapBlur
           // Only the bright fibre cores glow, and the glow stays close to them; a lower
