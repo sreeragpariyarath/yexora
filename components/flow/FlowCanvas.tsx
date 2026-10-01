@@ -9,6 +9,7 @@ import Fan, { type FanDrive } from "./Fan";
 import Fibers from "./Fibers";
 import LiquidGlass from "./glassLens";
 import Particles from "./Particles";
+import SceneFallback from "./SceneFallback";
 import { FAN_A, FAN_B, chapterAt, createFlowState, evaluate, type FlowState } from "./timeline";
 import useReducedMotion from "./useReducedMotion";
 import { onFrame } from "@/lib/frame";
@@ -111,12 +112,6 @@ function FrameBridge() {
   return null;
 }
 
-function Fallback() {
-  return (
-    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_50%,rgba(47,107,255,0.35),transparent_60%),radial-gradient(ellipse_at_70%_60%,rgba(47,107,255,0.25),transparent_55%)]" />
-  );
-}
-
 export default function FlowCanvas({ layoutRef }: FlowCanvasProps) {
   const flowRef = useRef<FlowState>(createFlowState());
   const reduced = useReducedMotion();
@@ -128,7 +123,7 @@ export default function FlowCanvas({ layoutRef }: FlowCanvasProps) {
       frameloop="never"
       gl={{ antialias: false, powerPreference: "high-performance" }}
       camera={{ fov: 45, position: [0, 0, 12], near: 0.1, far: 120 }}
-      fallback={<Fallback />}
+      fallback={<SceneFallback />}
     >
       {/* Drop resolution on slow devices instead of dropping frames */}
       <FrameBridge />

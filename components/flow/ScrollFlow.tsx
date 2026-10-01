@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { Component, useEffect, useRef, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import FlowSections from "./sections";
+import SceneFallback from "./SceneFallback";
 import type { SectionLayout } from "./FlowCanvas";
 
 // WebGL only runs in the browser; keep three.js out of the server render and the initial bundle.
@@ -10,6 +11,20 @@ import type { SectionLayout } from "./FlowCanvas";
 const loadCanvas = () => import("./FlowCanvas");
 if (typeof window !== "undefined") loadCanvas();
 const FlowCanvas = dynamic(loadCanvas, { ssr: false });
+
+/**
+ * If the WebGL context can't be created, R3F throws (its `fallback` prop only renders
+ * inside the <canvas>), which would take the whole page down. Show the gradient instead.
+ */
+class SceneBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  render() {
+    return this.state.failed ? <SceneFallback /> : this.props.children;
+  }
+}
 
 /**
  * The page: real sections scrolling over one fixed WebGL scene. The canvas maps
@@ -43,7 +58,9 @@ export default function ScrollFlow() {
   return (
     <>
       <div aria-hidden className="fixed inset-0">
-        <FlowCanvas layoutRef={layoutRef} />
+        <SceneBoundary>
+          <FlowCanvas layoutRef={layoutRef} />
+        </SceneBoundary>
       </div>
       <div ref={contentRef} className="relative z-10">
         <FlowSections />
