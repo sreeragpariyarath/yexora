@@ -50,8 +50,8 @@ export default function GlassPanel({
         shown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
       } ${className}`}
     >
-      {/* Faint scrim so a bright fibre node behind the card can't wash out its text */}
-      <div aria-hidden className="absolute inset-0 -z-10 bg-[#050713]/30" />
+      {/* Dark layer (same as CopyBlock glass) so bright fibres behind the card never wash out its text */}
+      <div aria-hidden className="absolute inset-0 -z-10 rounded-[inherit] bg-[#050713]/60 pointer-events-none" />
       {children}
     </div>
   );

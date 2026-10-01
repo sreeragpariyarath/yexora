@@ -30,7 +30,6 @@ export default function Principles() {
     >
       <CopyBlock
         glass
-        scrim
         eyebrow="How we work"
         title="Every Project Is Shaped Around the Client and Their Business."
         body="Solutions are tailored for VR headsets, real-time 3D, the web and the cloud — and every one follows the same principles."
