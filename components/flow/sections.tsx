@@ -62,17 +62,6 @@ export default function FlowSections() {
 
       <Services />
 
-      <section data-chapter id="future" aria-label="What's next" className="relative h-[200vh] w-full">
-        <div className={`${PIN} lg:items-end lg:pb-[18vh]`}>
-          <CopyBlock
-            glass
-            eyebrow="What's next"
-            title="The Future Is Immersive. Let's Build It Together."
-            className="max-w-xl lg:max-w-[42vw]"
-          />
-        </div>
-      </section>
-
       <Works />
 
       <Contact />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import CopyBlock from "./CopyBlock";
+import GlassPanel from "./GlassPanel";
 import useReducedMotion from "./useReducedMotion";
 
 type From = "left" | "right" | "bottom";
@@ -33,9 +33,9 @@ const ENTER: Record<From, string> = {
 };
 
 const PLACE: Record<From, string> = {
-  left: "lg:self-start lg:w-[58vw]",
-  right: "lg:self-end lg:w-[58vw]",
-  bottom: "lg:self-center lg:w-[70vw]",
+  left: "lg:self-start lg:w-[68%]",
+  right: "lg:self-end lg:w-[68%]",
+  bottom: "lg:self-center lg:w-[84%]",
 };
 
 // A card can become the active one once this much of it is on screen
@@ -69,7 +69,7 @@ function WorkCard({ work, active }: { work: Work; active: boolean }) {
       className={`w-full will-change-transform origin-bottom ${PLACE[work.from]}`}
       style={{ transform: ENTER[work.from], opacity: "var(--p, 0)" }}
     >
-      <div className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 bg-[#0c0f1f]/80 backdrop-blur-xl shadow-[0_0_80px_rgba(47,107,255,0.25)]">
+      <div className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 bg-[#0c0f1f] shadow-[0_18px_60px_rgba(5,7,19,0.55)]">
         {failed ? (
           <div className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(ellipse_at_30%_40%,rgba(47,107,255,0.35),transparent_60%),radial-gradient(ellipse_at_75%_70%,rgba(47,107,255,0.25),transparent_55%)]">
             <span className="font-poppins text-xs tracking-[0.18em] uppercase text-white/60">Video coming soon</span>
@@ -153,18 +153,15 @@ export default function Works() {
   }, [reduced]);
 
   return (
-    <section data-chapter id="works" aria-label="Our work" className="relative w-full px-6 sm:px-10 lg:px-[6vw] pt-[30vh] pb-[20vh]">
-      <CopyBlock
-        eyebrow="Selected works"
-        title="Our Work in Motion"
-        body="A look at the software and immersive experiences we've built."
-        className="text-center lg:text-left max-w-xl lg:max-w-[40vw]"
-      />
-      <div ref={listRef} className="mt-[12vh] flex flex-col gap-[14vh] [perspective:1400px] overflow-x-clip">
-        {WORKS.map((work, i) => (
-          <WorkCard key={work.title} work={work} active={active === i} />
-        ))}
-      </div>
+    <section data-chapter id="works" aria-label="Our work" className="relative w-full px-6 sm:px-10 lg:px-[6vw] py-[24vh]">
+      {/* The works sit in one glass box, framed by the hourglass lattice behind it */}
+      <GlassPanel threshold={0.05} className="mx-auto lg:w-[78vw] p-5 sm:p-8 lg:p-[3vw]">
+        <div ref={listRef} className="flex flex-col gap-[10vh] [perspective:1400px]">
+          {WORKS.map((work, i) => (
+            <WorkCard key={work.title} work={work} active={active === i} />
+          ))}
+        </div>
+      </GlassPanel>
     </section>
   );
 }

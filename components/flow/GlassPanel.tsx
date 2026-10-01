@@ -12,11 +12,14 @@ export default function GlassPanel({
   children,
   className = "",
   delay = 0,
+  threshold = 0.25,
 }: {
   children: ReactNode;
   className?: string;
   /** Stagger, in ms */
   delay?: number;
+  /** Share of the panel that must be on screen to reveal it (lower for very tall panels) */
+  threshold?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [seen, setSeen] = useState(false);
@@ -32,11 +35,11 @@ export default function GlassPanel({
           observer.disconnect();
         }
       },
-      { threshold: 0.25 }
+      { threshold }
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [threshold]);
 
   const shown = seen || reduced;
 
