@@ -65,7 +65,7 @@ export default function Particles({ flowRef }: { flowRef: RefObject<FlowState> }
         uTime: { value: 0 },
         uPixelRatio: { value: 1 },
         uOpacity: { value: 1 },
-        uColor: { value: new THREE.Color("#a58bff") },
+        uColor: { value: new THREE.Color("#4d86ff") },
       },
     }),
     []

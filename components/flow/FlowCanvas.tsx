@@ -104,7 +104,7 @@ const driveFanB = (f: FlowState): FanDrive => ({ load: 1, grow: f.fanBGrow, wall
 
 function Fallback() {
   return (
-    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_50%,rgba(139,92,246,0.35),transparent_60%),radial-gradient(ellipse_at_70%_60%,rgba(47,107,255,0.25),transparent_55%)]" />
+    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_50%,rgba(47,107,255,0.35),transparent_60%),radial-gradient(ellipse_at_70%_60%,rgba(47,107,255,0.25),transparent_55%)]" />
   );
 }
 
