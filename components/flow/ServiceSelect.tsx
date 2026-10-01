@@ -107,16 +107,16 @@ export default function ServiceSelect({ name, label, options, placeholder = "Cho
         aria-labelledby={`${labelId} ${valueId}`}
         onClick={onTriggerClick}
         onKeyDown={onKeyDown}
-        className={`relative w-full text-left rounded-xl border px-4 pt-6 pb-2.5 pr-11 font-poppins text-sm outline-none cursor-pointer transition-[border-color,background-color,box-shadow] duration-300 hover:border-white/20 focus-visible:border-accent/70 focus-visible:bg-white/[0.06] focus-visible:shadow-[0_0_0_4px_rgba(47,107,255,0.18)] ${
+        className={`relative w-full text-left rounded-2xl border px-4 pt-6 pb-2.5 pr-11 font-poppins text-sm outline-none cursor-pointer transition-[border-color,background-color,box-shadow] duration-300 hover:border-white/25 focus-visible:border-accent/70 focus-visible:bg-white/[0.06] focus-visible:shadow-[0_0_0_4px_rgba(47,107,255,0.18)] ${
           open
             ? "border-accent/70 bg-white/[0.06] shadow-[0_0_0_4px_rgba(47,107,255,0.18)]"
-            : "border-white/10 bg-white/[0.035]"
+            : "border-white/12 bg-white/[0.04] shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]"
         }`}
       >
         <span
           id={labelId}
           className={`pointer-events-none absolute left-4 top-2 text-[10px] uppercase tracking-[0.16em] transition-colors duration-200 ${
-            open ? "text-blue-300" : "text-white/45"
+            open ? "text-blue-300" : "text-white/50"
           }`}
         >
           {label}

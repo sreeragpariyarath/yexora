@@ -1,5 +1,6 @@
 import { Box, Copyright, Glasses, Globe } from "lucide-react";
 import CopyBlock from "./CopyBlock";
+import Eyebrow from "./Eyebrow";
 import GlassPanel from "./GlassPanel";
 import TintedImage from "./TintedImage";
 import { thumb } from "./services";
@@ -9,16 +10,6 @@ import { thumb } from "./services";
 
 const TITLE = "font-poppins font-medium tracking-tight leading-[1.08] text-white";
 const BODY = "font-poppins text-sm lg:text-[0.95vw] leading-relaxed text-white/85";
-const LABEL = "font-poppins font-medium uppercase text-[11px] lg:text-xs tracking-[0.18em] text-white/80";
-
-function Eyebrow({ children }: { children: string }) {
-  return (
-    <p className={`${LABEL} inline-flex items-center gap-2.5`}>
-      <span aria-hidden className="w-2 h-2 rotate-45 border border-white/70" />
-      {children}
-    </p>
-  );
-}
 
 export default function Principles() {
   return (
