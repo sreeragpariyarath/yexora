@@ -57,7 +57,7 @@ export default function Principles() {
           </div>
         </GlassPanel>
 
-        <GlassPanel className="lg:col-span-4 min-h-56 lg:h-[30vh]">
+        <GlassPanel className="lg:col-span-4 min-h-56 lg:min-h-[30vh]">
           <div className="h-full flex flex-col justify-center p-7 lg:p-[2.2vw]">
             <div className="flex items-center gap-4 text-white/90">
               <Glasses className="w-7 h-7" strokeWidth={1.5} />
@@ -69,7 +69,7 @@ export default function Principles() {
           </div>
         </GlassPanel>
 
-        <GlassPanel delay={100} className="group lg:col-span-5 min-h-56 lg:h-[30vh]">
+        <GlassPanel delay={100} className="group lg:col-span-5 min-h-56 lg:min-h-[30vh]">
           <TintedImage src={thumb("principle-engineering", 1200, 800)} sizes="(min-width: 1024px) 40vw, 100vw" />
           <div aria-hidden className="absolute inset-0 bg-linear-to-t from-[#000000]/85 via-[#000000]/35 to-transparent" />
           <div className="relative h-full flex flex-col justify-end p-7 lg:p-[2.2vw]">
@@ -78,14 +78,14 @@ export default function Principles() {
           </div>
         </GlassPanel>
 
-        <div className="lg:col-span-3 grid gap-4 lg:gap-5 lg:h-[30vh] lg:grid-rows-2">
-          <GlassPanel delay={200} className="min-h-36">
+        <div className="lg:col-span-3 grid gap-4 lg:gap-5 lg:grid-rows-2">
+          <GlassPanel delay={200} className="min-h-36 lg:min-h-0">
             <div className="h-full flex flex-col justify-center p-6 lg:p-[1.6vw]">
               <Eyebrow>On schedule</Eyebrow>
               <p className={`${BODY} mt-3`}>We respect deadlines and take full ownership of quality.</p>
             </div>
           </GlassPanel>
-          <GlassPanel delay={300} className="min-h-28">
+          <GlassPanel delay={300} className="min-h-28 lg:min-h-0">
             <div className="h-full flex items-center gap-4 p-6 lg:p-[1.6vw]">
               <Copyright className="w-7 h-7 shrink-0 text-white/70" strokeWidth={1.5} />
               <p className={BODY}>We only use properly licensed assets and code.</p>
