@@ -34,6 +34,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} h-full antialiased dark`}
     >
+      <head>
+        {/* Work videos are served from R2; open the connection early */}
+        <link rel="preconnect" href="https://media.yexoraitsolutions.com" />
+      </head>
       <body className="min-h-full flex flex-col bg-[#050713] text-zinc-100">
         <SmoothScroll>{children}</SmoothScroll>
       </body>

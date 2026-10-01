@@ -9,17 +9,20 @@ type From = "left" | "right" | "bottom";
 interface Work {
   title: string;
   category: string;
-  /** Drop the files into public/works/ */
+  /** Served from Cloudflare R2 (see MEDIA_BASE) */
   src: string;
   poster?: string;
   from: From;
 }
 
+// The videos live in the "yexora-media" R2 bucket (videos/ folder), served via the custom domain
+const MEDIA_BASE = "https://media.yexoraitsolutions.com/videos";
+
 // TODO: real titles and categories for each video.
 const WORKS: Work[] = [
-  { title: "Project One", category: "Immersive experience", src: "/works/work1.mp4", from: "left" },
-  { title: "Project Two", category: "Web platform", src: "/works/work2.mp4", from: "right" },
-  { title: "Project Three", category: "AR / VR solution", src: "/works/work3.mp4", from: "bottom" },
+  { title: "Project One", category: "Immersive experience", src: `${MEDIA_BASE}/work1.mp4`, from: "left" },
+  { title: "Project Two", category: "Web platform", src: `${MEDIA_BASE}/work2.mp4`, from: "right" },
+  { title: "Project Three", category: "AR / VR solution", src: `${MEDIA_BASE}/work3.mp4`, from: "bottom" },
 ];
 
 // Entrance per direction, driven by the --p CSS var (0 → 1) so scrolling never re-renders React
