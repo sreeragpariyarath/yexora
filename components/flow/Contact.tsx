@@ -2,10 +2,9 @@
 
 import { type ComponentType, type FormEvent, type ReactNode } from "react";
 import Image from "next/image";
-import { ArrowUpRight, Mail, MapPin, Phone } from "lucide-react";
+import { ArrowUpRight, Mail, MapPin } from "lucide-react";
 import SocialLinks from "@/components/socials";
-import { EMAIL, LEGAL_NAME, LOCATION, PHONE } from "@/components/contact";
-import logoMark from "@/public/logo-mark.png";
+import { EMAIL, LEGAL_NAME, LOCATION } from "@/components/contact";
 import CopyBlock from "./CopyBlock";
 import ServiceSelect from "./ServiceSelect";
 import { SERVICES } from "./services";
@@ -164,8 +163,7 @@ export default function Contact() {
         </div>
       </div>
 
-      <footer className="mt-[12vh] pt-6 border-t border-white/[0.07] flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-center font-poppins text-[10px] lg:text-[11px] uppercase tracking-[0.24em] text-white/45">
-        <Image src={logoMark} alt="" className="w-3.5 h-3.5 brightness-0 invert opacity-60" />
+      <footer className="mt-[12vh] pt-6 border-t border-white/[0.07] flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-center font-poppins text-[10px] lg:text-[11px] capitalize tracking-[0.24em] text-white/45">
         <span className="text-white/65">{LEGAL_NAME}</span>
         <span aria-hidden className="text-white/25">·</span>
         <span>© 2026 {LOCATION}</span>

@@ -75,7 +75,7 @@ export default function Principles() {
           </div>
         </GlassPanel>
 
-        <div className="lg:col-span-3 grid gap-4 lg:gap-5 lg:h-[30vh] lg:grid-rows-2">
+        <div className="lg:col-span-3 grid gap-4 lg:gap-10 lg:h-[30vh] lg:grid-rows-2">
           <GlassPanel delay={200} className="min-h-36">
             <div className="h-full flex flex-col justify-between p-6 lg:p-[1.6vw]">
               <Eyebrow>On schedule</Eyebrow>
