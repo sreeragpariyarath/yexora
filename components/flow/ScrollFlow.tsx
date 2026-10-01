@@ -6,7 +6,10 @@ import FlowSections from "./sections";
 import type { SectionLayout } from "./FlowCanvas";
 
 // WebGL only runs in the browser; keep three.js out of the server render and the initial bundle.
-const FlowCanvas = dynamic(() => import("./FlowCanvas"), { ssr: false });
+// Start fetching the chunk as soon as this module runs in the browser, not at first render.
+const loadCanvas = () => import("./FlowCanvas");
+if (typeof window !== "undefined") loadCanvas();
+const FlowCanvas = dynamic(loadCanvas, { ssr: false });
 
 /**
  * The page: real sections scrolling over one fixed WebGL scene. The canvas maps

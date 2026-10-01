@@ -22,10 +22,10 @@ interface FlowCanvasProps {
   layoutRef: RefObject<SectionLayout>;
 }
 
-// Hero intro: stay black briefly, then the fan grows in from the left
-const LOAD_DELAY = 0.35;
-const LOAD_SECONDS = 3.2;
-const easeInOutCubic = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+// Hero intro: the fan grows in from the left as soon as the scene is up. Ease-out, so it
+// is visible from the first frames instead of creeping in (no artificial delay)
+const LOAD_SECONDS = 2.2;
+const easeOutCubic = (x: number) => 1 - Math.pow(1 - x, 3);
 
 /**
  * Reads the scroll position every frame and evaluates the timeline into the shared
@@ -50,9 +50,9 @@ function Driver({
 
     // Advance the intro by capped frame time, so a slow first frame (shader
     // compile) pauses the grow instead of skipping straight to the end
-    introTime.current += Math.min(dt, 1 / 30);
-    const g = reduced ? 1 : Math.min(Math.max((introTime.current - LOAD_DELAY) / LOAD_SECONDS, 0), 1);
-    f.load = easeInOutCubic(g);
+    introTime.current += Math.min(dt, 1 / 20);
+    const g = reduced ? 1 : Math.min(introTime.current / LOAD_SECONDS, 1);
+    f.load = easeOutCubic(g);
     f.time = state.clock.elapsedTime;
   }, -1);
 
