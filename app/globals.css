@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -9,10 +8,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
   --font-poppins: var(--font-poppins-sans);
-  --font-bebas: 'Bebas Neue', Arial, sans-serif;
+  --font-bebas: var(--font-bebas-neue), Arial, sans-serif;
   --color-accent: #2f6bff;
 }
 
@@ -56,7 +53,33 @@ body {
 }
 
 .font-bebas {
-  font-family: 'Bebas Neue', Arial, sans-serif;
+  font-family: var(--font-bebas-neue), Arial, sans-serif;
+}
+
+/*
+  Loading screen (components/Loader.tsx): the mark turns one full circle clockwise
+  (~1.4s, eased), rests for 1s, and repeats. Only transform is animated, so it runs on
+  the compositor and keeps turning while the main thread is busy warming up the scene.
+*/
+.loader-mark {
+  animation: loader-spin 2.4s infinite;
+}
+
+@keyframes loader-spin {
+  0% {
+    transform: rotate(0deg);
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  58%,
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader-mark {
+    animation: none;
+  }
 }
 
 /*

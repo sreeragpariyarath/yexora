@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import useReducedMotion from "./useReducedMotion";
+import { useRevealed } from "@/lib/loading";
 import { onFrame } from "@/lib/frame";
 
 interface CopyBlockProps {
@@ -62,35 +63,49 @@ export default function CopyBlock({
     const section = el?.closest("section");
     if (!el || !section || !revealOnPin) return;
     let revealed = false;
-    const update = () => {
+    let reveal = -1;
+    const measure = () => {
       const vh = window.innerHeight;
       // Starts as the section's top passes 60% down the screen (so there's no empty gap after
       // the previous section) and completes once it's 20% past the top
       const x = Math.min(Math.max((0.6 * vh - section.getBoundingClientRect().top) / (0.8 * vh), 0), 1);
-      const r = reduced ? 1 : 1 - Math.pow(1 - x, 3);
-      el.style.setProperty("--reveal", r.toFixed(4));
-      if (!revealed && r > 0.02) {
+      reveal = reduced ? 1 : 1 - Math.pow(1 - x, 3);
+    };
+    const apply = () => {
+      if (reveal < 0) return;
+      el.style.setProperty("--reveal", reveal.toFixed(4));
+      if (!revealed && reveal > 0.02) {
         revealed = true;
         setSeen(true);
       }
+      reveal = -1;
     };
     // Run on the shared frame loop (lib/frame.ts), right after Lenis scrolls, so this moves
     // in the same frame as the page. A window "scroll" listener fires a frame late (jitter).
+    // Measure in the read phase and apply in the write phase, so no read forces a layout.
     let lastY = NaN;
-    const stop = onFrame(() => {
-      if (window.scrollY === lastY) return;
+    let dirty = true;
+    const stopRead = onFrame(() => {
+      if (!dirty && window.scrollY === lastY) return;
       lastY = window.scrollY;
-      update();
-    });
-    const onResize = () => update();
+      dirty = false;
+      measure();
+    }, "read");
+    const stopWrite = onFrame(apply);
+    const onResize = () => {
+      dirty = true;
+    };
     window.addEventListener("resize", onResize);
     return () => {
-      stop();
+      stopRead();
+      stopWrite();
       window.removeEventListener("resize", onResize);
     };
   }, [revealOnPin, reduced]);
 
-  const shown = seen || reduced;
+  // Nothing fades in behind the loading screen; it waits for the loader to lift
+  const revealed = useRevealed();
+  const shown = (seen || reduced) && revealed;
 
   return (
     <div

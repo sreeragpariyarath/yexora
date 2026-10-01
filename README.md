@@ -28,7 +28,8 @@ To preview the production build locally, serve the `out/` folder with any static
 
 | What | Where |
 | --- | --- |
-| Page sections (Hero, About, Challenge, Services, Future) | `components/flow/sections.tsx` |
+| Page sections (Hero, About, Principles, Services, Works, Contact) | `components/flow/sections.tsx` |
+| Loading screen | `components/Loader.tsx`, `lib/loading.ts` |
 | Services list | `components/flow/services.ts` |
 | Works videos | `components/flow/Works.tsx` (`MEDIA_BASE`) |
 | Contact details (email, phone, location) | `components/contact.ts` |

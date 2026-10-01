@@ -43,7 +43,7 @@ export default function MenuLink({ label, href, onClick }: MenuLinkProps) {
 
       <span
         aria-hidden
-        style={{ fontFamily: "'Bebas Neue', Arial, sans-serif" }}
+        style={{ fontFamily: "var(--font-bebas-neue), Arial, sans-serif" }}
         className="pointer-events-none relative z-10 inline-block whitespace-nowrap font-bebas uppercase text-[15vw] sm:text-7xl lg:text-7xl leading-[0.95] pt-2 -mb-[0.17em]"
       >
         {/* Grey layer: leaves upwards */}

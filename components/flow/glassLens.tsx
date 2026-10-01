@@ -17,6 +17,7 @@ import { EffectGroup, createEffectComponent } from "@react-three/postprocessing"
 import { BlendFunction, Effect, EffectAttribute } from "postprocessing";
 import * as THREE from "three";
 import { useMediaQuery } from "./useReducedMotion";
+import { onFrame } from "@/lib/frame";
 
 // Panels lensed at once (Principles shows up to 7 on screen). Pixels outside every panel exit early.
 const MAX_PANELS = 8;
@@ -145,7 +146,7 @@ function radiusOf(el: HTMLElement) {
  */
 export default function LiquidGlass() {
   const lensRef = useRef<GlassLensEffect>(null);
-  const panels = useRef<{ el: HTMLElement; radius: number }[]>([]);
+  const panels = useRef<{ el: HTMLElement; radius: number; near: boolean; rect: DOMRect | null }[]>([]);
   // Per-panel lens fade (0–1), by panel index; only touched in the frame loop
   const fades = useRef<number[]>([]);
   const pointer = useRef(new THREE.Vector2());
@@ -162,19 +163,43 @@ export default function LiquidGlass() {
   }, [reducedTransparency]);
 
   useEffect(() => {
+    // Only panels on or near the screen get measured each frame
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const panel = panels.current.find((p) => p.el === entry.target);
+          if (panel) panel.near = entry.isIntersecting;
+        });
+      },
+      { rootMargin: "25% 0px" }
+    );
     const refresh = () => {
+      observer.disconnect();
+      const previous = panels.current;
       panels.current = Array.from(document.querySelectorAll<HTMLElement>("[data-glass]"), (el) => ({
         el,
         radius: radiusOf(el),
+        near: previous.find((p) => p.el === el)?.near ?? false,
+        rect: null,
       }));
+      panels.current.forEach((panel) => observer.observe(panel.el));
     };
     const onMove = (e: PointerEvent) => {
       pointer.current.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1);
     };
+    // Measure in the frame loop's read phase (before any style writes), so these rect reads
+    // never force a layout; the canvas renders with them later in the same frame
+    const stop = onFrame(() => {
+      panels.current.forEach((panel) => {
+        panel.rect = panel.near ? panel.el.getBoundingClientRect() : null;
+      });
+    }, "read");
     refresh();
     window.addEventListener("resize", refresh);
     window.addEventListener("pointermove", onMove, { passive: true });
     return () => {
+      stop();
+      observer.disconnect();
       window.removeEventListener("resize", refresh);
       window.removeEventListener("pointermove", onMove);
     };
@@ -197,8 +222,8 @@ export default function LiquidGlass() {
     panels.current.forEach((panel, i) => {
       const target = !reducedTransparency && panel.el.dataset.glassShown === "1" ? 1 : 0;
       fade[i] = THREE.MathUtils.damp(fade[i] ?? 0, target, 4, step);
-      if (count >= MAX_PANELS || fade[i] < 0.002) return;
-      const r = panel.el.getBoundingClientRect();
+      const r = panel.rect;
+      if (count >= MAX_PANELS || fade[i] < 0.002 || !r) return;
       if (r.bottom < 0 || r.top > height || r.right < 0 || r.left > width) return;
       rects[count].set(r.left, r.top, r.width, r.height);
       radii[count] = panel.radius;

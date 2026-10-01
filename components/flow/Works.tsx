@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import useReducedMotion from "./useReducedMotion";
 import { onFrame } from "@/lib/frame";
+import { cancelIdle, onRevealed, whenIdle } from "@/lib/loading";
 
 type From = "left" | "right" | "bottom";
 
@@ -71,13 +72,15 @@ function WorkCard({ work, active }: { work: Work; active: boolean }) {
     >
       {/* Frame: a lit gradient rim (like the glass panels' edge), a deep drop shadow and a
           blue glow that brightens on the playing card */}
+      <div className="relative rounded-[22px] p-[1.5px] bg-linear-to-b from-[#a5cdff]/80 via-accent/45 to-[#4b8cff]/60 shadow-[0_30px_70px_-20px_rgba(2,4,14,0.85),0_0_40px_rgba(47,107,255,0.15)]">
+      {/* The playing card's stronger shadow + glow, crossfaded with opacity: animating a large
+          blurred box-shadow repaints it every frame, opacity is free (compositor only) */}
       <div
-        className={`relative rounded-[22px] p-[1.5px] bg-linear-to-b from-[#a5cdff]/80 via-accent/45 to-[#4b8cff]/60 transition-shadow duration-700 ${
-          active
-            ? "shadow-[0_40px_90px_-20px_rgba(2,4,14,0.9),0_0_70px_rgba(47,107,255,0.45)]"
-            : "shadow-[0_30px_70px_-20px_rgba(2,4,14,0.85),0_0_40px_rgba(47,107,255,0.15)]"
+        aria-hidden
+        className={`absolute inset-0 -z-10 rounded-[inherit] pointer-events-none shadow-[0_40px_90px_-20px_rgba(2,4,14,0.9),0_0_70px_rgba(47,107,255,0.45)] transition-opacity duration-700 will-change-[opacity] ${
+          active ? "opacity-100" : "opacity-0"
         }`}
-      >
+      />
       <div className="relative aspect-video rounded-[20.5px] overflow-hidden bg-[#0c0f1f]">
         {failed ? (
           <div className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(ellipse_at_30%_40%,rgba(47,107,255,0.35),transparent_60%),radial-gradient(ellipse_at_75%_70%,rgba(47,107,255,0.25),transparent_55%)]">
@@ -95,8 +98,9 @@ function WorkCard({ work, active }: { work: Work; active: boolean }) {
               playsInline
               preload="metadata"
               onError={() => setFailed(true)}
+              // No filter at all on the playing video (even saturate(100%) keeps it on the slow path)
               className={`absolute inset-0 w-full h-full object-cover transition-[filter] duration-700 ${
-                active ? "saturate-100" : "saturate-50"
+                active ? "" : "saturate-50"
               }`}
             />
             {/* Dims the cards that aren't playing */}
@@ -133,10 +137,14 @@ export default function Works() {
     const list = listRef.current;
     if (!list) return;
     const cards = Array.from(list.querySelectorAll<HTMLElement>("[data-work]"));
-    const update = () => {
+    const progress = cards.map(() => 0);
+    let best = -1;
+    let pending = false;
+
+    const measure = () => {
       const vh = window.innerHeight;
-      let best = -1;
       let bestDist = Infinity;
+      best = -1;
       // Measure each card's untransformed layout box (offsetTop ignores transforms). Reading
       // getBoundingClientRect() here included the card's own slide-in translate, which fed
       // back into --p and made the cards shake while scrolling.
@@ -146,8 +154,7 @@ export default function Works() {
         const r = { top, bottom: top + card.offsetHeight, height: card.offsetHeight };
         // 0 when the card's top reaches the bottom of the screen, 1 once it's 30% up
         const x = Math.min(Math.max((vh - r.top) / (vh * 0.7), 0), 1);
-        const p = reduced ? 1 : 1 - Math.pow(1 - x, 3);
-        card.style.setProperty("--p", p.toFixed(4));
+        progress[i] = reduced ? 1 : 1 - Math.pow(1 - x, 3);
 
         // Active = the card nearest the middle of the screen, once enough of it shows.
         // So the hand-over happens when the next card is half in and this one half out.
@@ -159,24 +166,70 @@ export default function Works() {
           best = i;
         }
       });
+      pending = true;
+    };
+    const apply = () => {
+      if (!pending) return;
+      pending = false;
+      cards.forEach((card, i) => card.style.setProperty("--p", progress[i].toFixed(4)));
       // Only re-renders when the active card changes
       setActive(best);
     };
     // Run on the shared frame loop (lib/frame.ts), right after Lenis scrolls, so this moves
     // in the same frame as the page. A window "scroll" listener fires a frame late (jitter).
+    // Measure in the read phase and apply in the write phase, so no read forces a layout.
     let lastY = NaN;
-    const stop = onFrame(() => {
-      if (window.scrollY === lastY) return;
+    let dirty = true;
+    const stopRead = onFrame(() => {
+      if (!dirty && window.scrollY === lastY) return;
       lastY = window.scrollY;
-      update();
-    });
-    const onResize = () => update();
+      dirty = false;
+      measure();
+    }, "read");
+    const stopWrite = onFrame(apply);
+    const onResize = () => {
+      dirty = true;
+    };
     window.addEventListener("resize", onResize);
     return () => {
-      stop();
+      stopRead();
+      stopWrite();
       window.removeEventListener("resize", onResize);
     };
   }, [reduced]);
+
+  // Buffer the videos well before they're reached (about two screens ahead), so the active
+  // card starts playing straight away instead of downloading as you scroll onto it
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    const videos = () => Array.from(list.querySelectorAll("video"));
+    const buffer = (video: HTMLVideoElement) => {
+      if (video.preload !== "auto") video.preload = "auto";
+    };
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        videos().forEach(buffer);
+        observer.disconnect();
+      },
+      { rootMargin: "200% 0px" }
+    );
+    observer.observe(list);
+    // The first video also starts buffering once the page is idle after the loader
+    let idle = 0;
+    const stop = onRevealed(() => {
+      idle = whenIdle(() => {
+        const first = videos()[0];
+        if (first) buffer(first);
+      });
+    });
+    return () => {
+      observer.disconnect();
+      stop();
+      cancelIdle(idle);
+    };
+  }, []);
 
   return (
     <section data-chapter id="work-videos" aria-label="Work videos" className="relative w-full px-6 sm:px-10 lg:px-[6vw] pt-[12vh] pb-[20vh]">

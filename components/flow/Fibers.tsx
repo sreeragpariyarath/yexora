@@ -69,7 +69,9 @@ export default function Fibers({ flowRef }: { flowRef: RefObject<FlowState> }) {
   useFrame(() => {
     const f = flowRef.current;
     if (group.current) {
-      group.current.visible = f.tailGrow > 0.001;
+      // Also drawn during the loader's warm-up, so its shader compiles and its buffers upload
+      // there, not as a hitch the first time you scroll to the beam
+      group.current.visible = f.tailGrow > 0.001 || f.warm;
       group.current.rotation.z = f.tailRotZ;
     }
     if (!material.current) return;

@@ -13,6 +13,7 @@ import SceneFallback from "./SceneFallback";
 import { FAN_A, FAN_B, chapterAt, createFlowState, evaluate, type FlowState } from "./timeline";
 import useReducedMotion from "./useReducedMotion";
 import { onFrame } from "@/lib/frame";
+import { isRevealed, markReady } from "@/lib/loading";
 
 export interface SectionLayout {
   /** Document top of each [data-chapter] section, in order */
@@ -51,8 +52,9 @@ function Driver({
     evaluate(f, chapterAt(window.scrollY, tops, maxScroll));
 
     // Advance the intro by capped frame time, so a slow first frame (shader
-    // compile) pauses the grow instead of skipping straight to the end
-    introTime.current += Math.min(dt, 1 / 20);
+    // compile) pauses the grow instead of skipping straight to the end. It starts
+    // as the loader lifts, not behind it.
+    if (isRevealed()) introTime.current += Math.min(dt, 1 / 20);
     const g = reduced ? 1 : Math.min(introTime.current / LOAD_SECONDS, 1);
     f.load = easeOutCubic(g);
     f.time = state.clock.elapsedTime;
@@ -108,7 +110,47 @@ const driveFanB = (f: FlowState): FanDrive => ({ load: 1, grow: f.fanBGrow, wall
 function FrameBridge() {
   const advance = useThree((state) => state.advance);
   // advance() takes seconds (it becomes clock.elapsedTime / delta); rAF time is in ms
-  useEffect(() => onFrame((time) => advance(time / 1000)), [advance]);
+  useEffect(() => onFrame((time) => advance(time / 1000), "render"), [advance]);
+  return null;
+}
+
+// Rendered frames to wait (after compiling) before the loader may lift
+const WARMUP_FRAMES = 4;
+
+/**
+ * Runs under the loading screen: compiles every shader (in parallel where the browser
+ * supports it), then lets a few real frames render — which builds the bloom and glass
+ * passes and uploads all geometry, including the tail fibres that are otherwise hidden
+ * until you scroll to them. Then tells the loader the scene is ready.
+ */
+function Warmup({ flowRef }: { flowRef: RefObject<FlowState> }) {
+  const gl = useThree((state) => state.gl);
+  const scene = useThree((state) => state.scene);
+  const camera = useThree((state) => state.camera);
+
+  useEffect(() => {
+    const f = flowRef.current;
+    f.warm = true;
+    let cancelled = false;
+    let stop = () => {};
+    let frames = 0;
+    const finish = () => {
+      if (cancelled) return;
+      stop = onFrame(() => {
+        if (++frames < WARMUP_FRAMES) return;
+        stop();
+        f.warm = false;
+        markReady("scene");
+      }, "render");
+    };
+    gl.compileAsync(scene, camera).then(finish, finish);
+    return () => {
+      cancelled = true;
+      stop();
+      f.warm = false;
+    };
+  }, [gl, scene, camera, flowRef]);
+
   return null;
 }
 
@@ -125,9 +167,16 @@ export default function FlowCanvas({ layoutRef }: FlowCanvasProps) {
       camera={{ fov: 45, position: [0, 0, 12], near: 0.1, far: 120 }}
       fallback={<SceneFallback />}
     >
-      {/* Drop resolution on slow devices instead of dropping frames */}
       <FrameBridge />
-      <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(1.5)} />
+      {/* Drop resolution on slow devices instead of dropping frames. After 3 flip-flops it
+          settles on 1: every dpr change resizes the canvas and all post-processing buffers,
+          which is a visible hitch if it keeps toggling */}
+      <PerformanceMonitor
+        flipflops={3}
+        onDecline={() => setDpr(1)}
+        onIncline={() => setDpr(1.5)}
+        onFallback={() => setDpr(1)}
+      />
       <color attach="background" args={["#000000"]} />
       <Driver layoutRef={layoutRef} flowRef={flowRef} reduced={reduced} />
       <CameraRig flowRef={flowRef} reduced={reduced} />
@@ -149,6 +198,7 @@ export default function FlowCanvas({ layoutRef }: FlowCanvasProps) {
         {/* Liquid glass lens over the copy panels; after Bloom so it refracts the glow */}
         <LiquidGlass />
       </EffectComposer>
+      <Warmup flowRef={flowRef} />
     </Canvas>
   );
 }

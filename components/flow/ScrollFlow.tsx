@@ -4,6 +4,7 @@ import { Component, useEffect, useRef, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import FlowSections from "./sections";
 import SceneFallback from "./SceneFallback";
+import { markReady } from "@/lib/loading";
 import type { SectionLayout } from "./FlowCanvas";
 
 // WebGL only runs in the browser; keep three.js out of the server render and the initial bundle.
@@ -20,6 +21,10 @@ class SceneBoundary extends Component<{ children: ReactNode }, { failed: boolean
   state = { failed: false };
   static getDerivedStateFromError() {
     return { failed: true };
+  }
+  componentDidCatch() {
+    // Nothing left to warm up: let the loader go
+    markReady("scene");
   }
   render() {
     return this.state.failed ? <SceneFallback /> : this.props.children;

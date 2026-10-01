@@ -172,6 +172,8 @@ export function createFlowState() {
     time: 0,
     /** Hero intro (time-driven, 0–1) */
     load: 0,
+    /** True for the warm-up frames under the loader: everything draws once so its shader compiles there */
+    warm: false,
     camX: 0,
     camZ: 12,
     fanAWall: 0,

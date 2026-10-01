@@ -3,7 +3,9 @@
 import { useCallback, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import logo from "@/public/logo2.png";
+// A 3× copy of logo2.png sized for the header (the original is 3623×2192, decoded in full for a 56px logo)
+import logo from "@/public/logo2-header.png";
+import { GLASS_PILL, GlassPillParts } from "./GlassPill";
 import MenuIcon from "./MenuIcon";
 import MenuOverlay, { type NavItem } from "./MenuOverlay";
 
@@ -47,24 +49,10 @@ export default function Header({ className = "" }: HeaderProps) {
         </nav>
 
         <div className="flex items-center gap-3 justify-self-end">
-          {/* Liquid-glass pill: same CSS rim/sheen as the copy cards, and data-glass lets the
-              GPU lens (glassLens.tsx) refract the fibres behind it */}
-          <Link
-            href="#contact"
-            data-glass=""
-            data-glass-shown="1"
-            className="liquid-glass group relative inline-flex items-center gap-2.5 rounded-full! font-poppins font-medium text-[11px] sm:text-xs tracking-[0.16em] uppercase text-white pl-5 pr-2 py-2 transition-[box-shadow,translate] duration-300 hover:-translate-y-px hover:shadow-[0_0_28px_rgba(47,107,255,0.45)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-          >
-            <span aria-hidden className="absolute inset-0 -z-10 rounded-[inherit] bg-black/35" />
-            Get started
-            <span
-              aria-hidden
-              className="w-7 h-7 rounded-full bg-linear-to-br from-[#7ea6ff] to-accent flex items-center justify-center shadow-[0_0_14px_rgba(47,107,255,0.6)] transition-[rotate] duration-300 group-hover:rotate-45"
-            >
-              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M7 17 17 7M8 7h9v9" />
-              </svg>
-            </span>
+          {/* Liquid-glass pill (GlassPill.tsx): same CSS rim/sheen as the copy cards, and
+              data-glass lets the GPU lens refract the fibres behind it */}
+          <Link href="#contact" data-glass="" data-glass-shown="1" className={GLASS_PILL}>
+            <GlassPillParts>Get started</GlassPillParts>
           </Link>
 
           <button

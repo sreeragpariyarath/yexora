@@ -1,13 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Poppins } from "next/font/google";
+import { Bebas_Neue, Poppins } from "next/font/google";
 import "./globals.css";
+import Loader from "@/components/Loader";
 import SmoothScroll from "@/components/SmoothScroll";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL, THEME_COLOR } from "@/lib/site";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
 const poppins = Poppins({
   variable: "--font-poppins-sans",
@@ -15,9 +11,13 @@ const poppins = Poppins({
   weight: ["400", "500"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+// Display font for the menu overlay. Self-hosted by next/font (no render-blocking Google
+// Fonts stylesheet); only preloaded on demand since the menu is closed at first.
+const bebasNeue = Bebas_Neue({
+  variable: "--font-bebas-neue",
   subsets: ["latin"],
+  weight: "400",
+  preload: false,
 });
 
 const TITLE = `${SITE_NAME} | ${SITE_TAGLINE}`;
@@ -67,14 +67,19 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} h-full antialiased dark`}
+      className={`${poppins.variable} ${bebasNeue.variable} h-full antialiased dark`}
     >
       <head>
         {/* Work videos are served from R2; open the connection early */}
         <link rel="preconnect" href="https://media.yexoraitsolutions.com" />
       </head>
       <body className="min-h-full flex flex-col bg-[#000000] text-zinc-100">
-        <SmoothScroll>{children}</SmoothScroll>
+        {/* Without JavaScript nothing would ever lift the loading screen */}
+        <noscript dangerouslySetInnerHTML={{ __html: "<style>#site-loader{display:none}</style>" }} />
+        <SmoothScroll>
+          <Loader />
+          {children}
+        </SmoothScroll>
       </body>
     </html>
   );

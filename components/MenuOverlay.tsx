@@ -85,7 +85,7 @@ export default function MenuOverlay({ open, onClose, items }: MenuOverlayProps) 
           <div className="flex justify-center select-none pointer-events-none shrink-0 -mt-[1vw]">
             <span
               aria-hidden
-              style={{ fontFamily: "'Bebas Neue', Arial, sans-serif" }}
+              style={{ fontFamily: "var(--font-bebas-neue), Arial, sans-serif" }}
               className="font-bebas whitespace-nowrap text-[14vw] leading-[0.85] bg-linear-to-b from-white/35 via-white/10 via-45% to-transparent to-80% bg-clip-text text-transparent"
             >
               YEXORA IT SOLUTIONS
