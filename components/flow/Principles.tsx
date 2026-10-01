@@ -1,23 +1,22 @@
-import Image from "next/image";
 import { Box, Copyright, Glasses, Globe } from "lucide-react";
-import SectionHeading from "./SectionHeading";
+import CopyBlock from "./CopyBlock";
+import GlassPanel from "./GlassPanel";
+import TintedImage from "./TintedImage";
 import { thumb } from "./services";
 
-// Bento grid of working principles (layout from the owner's reference, in the site's dark theme).
-// Images are temporary placeholders (see `thumb` in services.ts).
+// Working principles as a bento grid of liquid-glass cards (layout from the owner's
+// reference, styled like the rest of the site). Photos are temporary placeholders.
 
-// Near-opaque so the bright fibres behind the grid never wash out the text
-const CARD = "relative overflow-hidden rounded-2xl border border-white/10 bg-[#0b0e1c]/90";
+const TITLE = "font-poppins font-medium tracking-tight leading-[1.08] text-white";
+const BODY = "font-poppins text-sm lg:text-[0.95vw] leading-relaxed text-white/85";
+const LABEL = "font-poppins font-medium uppercase text-[11px] lg:text-xs tracking-[0.18em] text-white/80";
 
-function Photo({ seed, className = "" }: { seed: string; className?: string }) {
+function Eyebrow({ children }: { children: string }) {
   return (
-    <Image
-      src={thumb(seed, 1200, 800)}
-      alt=""
-      fill
-      sizes="(min-width: 1024px) 50vw, 100vw"
-      className={`object-cover ${className}`}
-    />
+    <p className={`${LABEL} inline-flex items-center gap-2.5`}>
+      <span aria-hidden className="w-2 h-2 rotate-45 border border-white/70" />
+      {children}
+    </p>
   );
 }
 
@@ -27,85 +26,68 @@ export default function Principles() {
       data-chapter
       id="principles"
       aria-label="Work principles"
-      className="relative w-full px-6 sm:px-10 lg:px-[6vw] pt-[22vh] pb-[18vh]"
+      className="relative w-full px-6 sm:px-10 lg:px-[6vw] pt-[24vh] pb-[18vh]"
     >
-      <SectionHeading index="03" label="Principles" watermark="/how we work" title="work principles" />
+      <CopyBlock
+        glass
+        eyebrow="How we work"
+        title="Every Project Is Shaped Around the Client and Their Business."
+        body="Solutions are tailored for VR headsets, real-time 3D, the web and the cloud — and every one follows the same principles."
+        className="text-center lg:text-left max-w-xl mx-auto lg:mx-0 lg:max-w-[46vw]"
+      />
 
-      <div className="mt-10 lg:mt-14 grid lg:grid-cols-2 gap-6 lg:gap-[6vw] items-start font-poppins">
-        <p className="text-sm lg:text-[1vw] leading-relaxed text-white/60 max-w-sm">
-          Solutions are tailored for VR headsets, real-time 3D, the web, and the cloud.
-        </p>
-        <p className="text-2xl sm:text-3xl lg:text-[2.3vw] leading-[1.2] tracking-tight text-white">
-          Every project is shaped around the client and their business.
-        </p>
-      </div>
-
-      <div className="mt-12 lg:mt-16 grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4 font-poppins">
-        {/* Row 1 */}
-        <article className={`${CARD} lg:col-span-6 h-72 lg:h-[40vh]`}>
-          <Photo seed="principle-transparency" />
-          <div className="absolute inset-0 bg-[#050713]/55" />
-          <div className="relative h-full flex flex-col items-center justify-center text-center px-8">
-            <h3 className="text-3xl lg:text-[2.6vw] font-medium tracking-tight text-white">Transparency</h3>
-            <p className="mt-3 text-sm lg:text-[0.95vw] text-white/85 max-w-sm">
-              We align on goals, scope, and outcomes before we start.
-            </p>
+      <div className="mt-10 lg:mt-[8vh] grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-5">
+        <GlassPanel className="group lg:col-span-6 min-h-64 lg:h-[38vh]">
+          <TintedImage ghost src={thumb("principle-transparency", 1200, 800)} sizes="(min-width: 1024px) 50vw, 100vw" />
+          <div className="relative h-full flex flex-col justify-end p-7 lg:p-[2.2vw]">
+            <Eyebrow>Transparency</Eyebrow>
+            <h3 className={`${TITLE} mt-3 text-2xl lg:text-[2vw]`}>Clear From Day One.</h3>
+            <p className={`${BODY} mt-3 max-w-md`}>We align on goals, scope and outcomes before we start.</p>
           </div>
-        </article>
+        </GlassPanel>
 
-        <article className={`${CARD} lg:col-span-6 h-72 lg:h-[40vh]`}>
-          <Photo seed="principle-aesthetics" className="grayscale" />
-          <div className="absolute inset-0 bg-linear-to-t from-[#050713]/85 via-[#050713]/45 to-[#050713]/60" />
-          <div className="relative h-full flex flex-col justify-between p-6 lg:p-8">
-            <p className="text-sm lg:text-[0.95vw] text-white/80 max-w-sm">
-              Not beauty for its own sake — clarity, performance, and impact.
-            </p>
-            <h3 className="text-3xl lg:text-[2.6vw] font-medium tracking-tight text-white">Smart aesthetics</h3>
+        <GlassPanel delay={100} className="group lg:col-span-6 min-h-64 lg:h-[38vh]">
+          <TintedImage ghost src={thumb("principle-aesthetics", 1200, 800)} sizes="(min-width: 1024px) 50vw, 100vw" />
+          <div className="relative h-full flex flex-col justify-end p-7 lg:p-[2.2vw]">
+            <Eyebrow>Smart aesthetics</Eyebrow>
+            <h3 className={`${TITLE} mt-3 text-2xl lg:text-[2vw]`}>Design That Earns Its Place.</h3>
+            <p className={`${BODY} mt-3 max-w-md`}>Not beauty for its own sake — clarity, performance and impact.</p>
           </div>
-        </article>
+        </GlassPanel>
 
-        {/* Row 2 */}
-        <article className={`${CARD} lg:col-span-4 h-56 lg:h-[30vh] flex flex-col items-center justify-center gap-5 text-center px-6`}>
-          <div className="flex items-center gap-4 text-white/85">
-            <Glasses className="w-7 h-7" strokeWidth={1.5} />
-            <Box className="w-7 h-7" strokeWidth={1.5} />
-            <Globe className="w-7 h-7" strokeWidth={1.5} />
-          </div>
-          <h3 className="text-sm lg:text-[1vw] font-medium uppercase tracking-[0.08em] text-white">
-            Honesty about
-            <br />
-            technology
-          </h3>
-        </article>
-
-        <article className={`${CARD} lg:col-span-5 h-56 lg:h-[30vh]`}>
-          <Photo seed="principle-engineering" />
-          <div className="absolute inset-0 bg-linear-to-t from-[#050713]/90 via-[#050713]/30 to-transparent" />
-          <div className="relative h-full flex flex-col justify-end p-6">
-            <h3 className="text-sm lg:text-[1vw] font-medium uppercase tracking-[0.06em] text-white">
-              Value-driven engineering
-            </h3>
-            <p className="mt-1.5 text-sm lg:text-[0.9vw] text-white/80">Every pixel and polygon serves your goals.</p>
-          </div>
-        </article>
-
-        <div className="lg:col-span-3 grid gap-3 lg:gap-4 lg:h-[30vh] lg:grid-rows-[3fr_2fr]">
-          <article className={`${CARD} h-40 lg:h-auto`}>
-            <Photo seed="principle-schedule" />
-            <div className="absolute inset-0 bg-[#050713]/60" />
-            <div className="relative h-full flex flex-col justify-between p-5">
-              <h3 className="font-mono text-[11px] lg:text-[0.75vw] uppercase tracking-[0.22em] text-white">
-                On schedule
-              </h3>
-              <p className="text-xs lg:text-[0.8vw] text-white/85">
-                We respect deadlines and take full ownership of quality.
-              </p>
+        <GlassPanel className="lg:col-span-4 min-h-56 lg:h-[30vh]">
+          <div className="h-full flex flex-col justify-end p-7 lg:p-[2.2vw]">
+            <div className="flex items-center gap-4 text-white/90">
+              <Glasses className="w-7 h-7" strokeWidth={1.5} />
+              <Box className="w-7 h-7" strokeWidth={1.5} />
+              <Globe className="w-7 h-7" strokeWidth={1.5} />
             </div>
-          </article>
-          <article className={`${CARD} h-28 lg:h-auto flex items-center gap-4 px-5`}>
-            <Copyright className="w-7 h-7 shrink-0 text-white/45" strokeWidth={1.5} />
-            <p className="text-xs lg:text-[0.8vw] text-white/80">We only use properly licensed assets and code.</p>
-          </article>
+            <h3 className={`${TITLE} mt-5 text-xl lg:text-[1.45vw]`}>Honesty About Technology</h3>
+            <p className={`${BODY} mt-2`}>We recommend what fits the problem, not what is fashionable.</p>
+          </div>
+        </GlassPanel>
+
+        <GlassPanel delay={100} className="group lg:col-span-5 min-h-56 lg:h-[30vh]">
+          <TintedImage ghost src={thumb("principle-engineering", 1200, 800)} sizes="(min-width: 1024px) 40vw, 100vw" />
+          <div className="relative h-full flex flex-col justify-end p-7 lg:p-[2.2vw]">
+            <Eyebrow>Value-driven engineering</Eyebrow>
+            <p className={`${BODY} mt-3`}>Every pixel and polygon serves your goals.</p>
+          </div>
+        </GlassPanel>
+
+        <div className="lg:col-span-3 grid gap-4 lg:gap-5 lg:h-[30vh] lg:grid-rows-2">
+          <GlassPanel delay={200} className="min-h-36">
+            <div className="h-full flex flex-col justify-between p-6 lg:p-[1.6vw]">
+              <Eyebrow>On schedule</Eyebrow>
+              <p className={`${BODY} mt-3`}>We respect deadlines and take full ownership of quality.</p>
+            </div>
+          </GlassPanel>
+          <GlassPanel delay={300} className="min-h-28">
+            <div className="h-full flex items-center gap-4 p-6 lg:p-[1.6vw]">
+              <Copyright className="w-7 h-7 shrink-0 text-white/70" strokeWidth={1.5} />
+              <p className={BODY}>We only use properly licensed assets and code.</p>
+            </div>
+          </GlassPanel>
         </div>
       </div>
     </section>

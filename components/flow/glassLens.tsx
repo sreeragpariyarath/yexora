@@ -18,7 +18,8 @@ import { BlendFunction, Effect, EffectAttribute } from "postprocessing";
 import * as THREE from "three";
 import { useMediaQuery } from "./useReducedMotion";
 
-const MAX_PANELS = 4;
+// Panels lensed at once (Principles shows up to 7 on screen). Pixels outside every panel exit early.
+const MAX_PANELS = 8;
 
 const fragmentShader = /* glsl */ `
   uniform vec4 uRect[${MAX_PANELS}];     // x, y, w, h in CSS px (top-left origin)
