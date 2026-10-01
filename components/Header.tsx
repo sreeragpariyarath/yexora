@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import logoMark from "@/public/logo-mark.png";
+import logo from "@/public/logo2.png";
 import MenuIcon from "./MenuIcon";
 import MenuOverlay, { type NavItem } from "./MenuOverlay";
 
@@ -31,7 +31,7 @@ export default function Header({ className = "" }: HeaderProps) {
       {/* Logo · nav (centred on desktop) · actions */}
       <div className="flex items-center justify-between lg:grid lg:grid-cols-[1fr_auto_1fr] gap-6">
         <Link href="/" aria-label="Yexora home" className="group inline-flex items-center justify-self-start">
-          <Image src={logoMark} alt="" priority className="w-8 h-8 brightness-0 invert transition-opacity group-hover:opacity-80" />
+          <Image src={logo} alt="" priority className="h-11 lg:h-14 w-auto transition-opacity group-hover:opacity-80" />
         </Link>
 
         <nav aria-label="Main" className="hidden lg:flex items-center gap-10">
