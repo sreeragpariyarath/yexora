@@ -58,7 +58,7 @@ export default function Principles() {
         </GlassPanel>
 
         <GlassPanel className="lg:col-span-4 min-h-56 lg:h-[30vh]">
-          <div className="h-full flex flex-col justify-end p-7 lg:p-[2.2vw]">
+          <div className="h-full flex flex-col justify-center p-7 lg:p-[2.2vw]">
             <div className="flex items-center gap-4 text-white/90">
               <Glasses className="w-7 h-7" strokeWidth={1.5} />
               <Box className="w-7 h-7" strokeWidth={1.5} />
@@ -78,9 +78,9 @@ export default function Principles() {
           </div>
         </GlassPanel>
 
-        <div className="lg:col-span-3 grid gap-4 lg:gap-10 lg:h-[30vh] lg:grid-rows-2">
+        <div className="lg:col-span-3 grid gap-4 lg:gap-5 lg:h-[30vh] lg:grid-rows-2">
           <GlassPanel delay={200} className="min-h-36">
-            <div className="h-full flex flex-col justify-between p-6 lg:p-[1.6vw]">
+            <div className="h-full flex flex-col justify-center p-6 lg:p-[1.6vw]">
               <Eyebrow>On schedule</Eyebrow>
               <p className={`${BODY} mt-3`}>We respect deadlines and take full ownership of quality.</p>
             </div>

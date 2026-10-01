@@ -136,8 +136,13 @@ export default function Works() {
       const vh = window.innerHeight;
       let best = -1;
       let bestDist = Infinity;
+      // Measure each card's untransformed layout box (offsetTop ignores transforms). Reading
+      // getBoundingClientRect() here included the card's own slide-in translate, which fed
+      // back into --p and made the cards shake while scrolling.
+      const listTop = list.getBoundingClientRect().top;
       cards.forEach((card, i) => {
-        const r = card.getBoundingClientRect();
+        const top = listTop + card.offsetTop;
+        const r = { top, bottom: top + card.offsetHeight, height: card.offsetHeight };
         // 0 when the card's top reaches the bottom of the screen, 1 once it's 30% up
         const x = Math.min(Math.max((vh - r.top) / (vh * 0.7), 0), 1);
         const p = reduced ? 1 : 1 - Math.pow(1 - x, 3);
@@ -168,7 +173,7 @@ export default function Works() {
 
   return (
     <section data-chapter id="work-videos" aria-label="Work videos" className="relative w-full px-6 sm:px-10 lg:px-[6vw] pt-[12vh] pb-[20vh]">
-      <div ref={listRef} className="flex flex-col gap-[14vh] [perspective:1400px] overflow-x-clip">
+      <div ref={listRef} className="relative flex flex-col gap-[14vh] [perspective:1400px] overflow-x-clip">
         {WORKS.map((work, i) => (
           <WorkCard key={work.title} work={work} active={active === i} />
         ))}
