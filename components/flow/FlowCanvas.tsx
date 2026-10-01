@@ -122,7 +122,7 @@ export default function FlowCanvas({ layoutRef }: FlowCanvasProps) {
     >
       {/* Drop resolution on slow devices instead of dropping frames */}
       <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(1.5)} />
-      <color attach="background" args={["#050713"]} />
+      <color attach="background" args={["#000000"]} />
       <Driver layoutRef={layoutRef} flowRef={flowRef} reduced={reduced} />
       <CameraRig flowRef={flowRef} reduced={reduced} />
       <Particles flowRef={flowRef} />

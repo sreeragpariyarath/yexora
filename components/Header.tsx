@@ -26,7 +26,7 @@ export default function Header({ className = "" }: HeaderProps) {
 
   return (
     <header
-      className={`w-full z-50 px-4 sm:px-8 lg:px-10 pt-5 pb-8 bg-linear-to-b from-[#050713]/70 to-transparent ${className}`}
+      className={`w-full z-50 px-4 sm:px-8 lg:px-10 pt-5 pb-8 bg-linear-to-b from-[#000000]/70 to-transparent ${className}`}
     >
       {/* Logo · nav (centred on desktop) · actions */}
       <div className="flex items-center justify-between lg:grid lg:grid-cols-[1fr_auto_1fr] gap-6">

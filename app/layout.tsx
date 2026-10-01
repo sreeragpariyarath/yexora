@@ -73,7 +73,7 @@ export default function RootLayout({
         {/* Work videos are served from R2; open the connection early */}
         <link rel="preconnect" href="https://media.yexoraitsolutions.com" />
       </head>
-      <body className="min-h-full flex flex-col bg-[#050713] text-zinc-100">
+      <body className="min-h-full flex flex-col bg-[#000000] text-zinc-100">
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>

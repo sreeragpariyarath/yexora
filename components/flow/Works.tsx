@@ -101,7 +101,7 @@ function WorkCard({ work, active }: { work: Work; active: boolean }) {
             {/* Dims the cards that aren't playing */}
             <div
               aria-hidden
-              className={`absolute inset-0 bg-[#050713] pointer-events-none transition-opacity duration-700 ease-out ${
+              className={`absolute inset-0 bg-[#000000] pointer-events-none transition-opacity duration-700 ease-out ${
                 active ? "opacity-0" : "opacity-60"
               }`}
             />

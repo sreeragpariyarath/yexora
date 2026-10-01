@@ -51,7 +51,7 @@ export default function GlassPanel({
       } ${className}`}
     >
       {/* Dark layer (same as CopyBlock glass) so bright fibres behind the card never wash out its text */}
-      <div aria-hidden className="absolute inset-0 -z-10 rounded-[inherit] bg-[#050713]/60 pointer-events-none" />
+      <div aria-hidden className="absolute inset-0 -z-10 rounded-[inherit] bg-[#000000]/60 pointer-events-none" />
       {children}
     </div>
   );

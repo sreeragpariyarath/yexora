@@ -6,4 +6,4 @@ export const SITE_TAGLINE = "Immersive Tech & Software, Engineered to Scale";
 export const SITE_DESCRIPTION =
   "Yexora IT Solutions is an Indian technology company building software, AR/VR experiences and AI solutions — from idea to launch and beyond.";
 /** Site background, also used as the browser theme colour */
-export const THEME_COLOR = "#050713";
+export const THEME_COLOR = "#000000";

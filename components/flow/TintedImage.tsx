@@ -26,7 +26,7 @@ export default function TintedImage({
       <div aria-hidden className="absolute inset-0 bg-accent/25 mix-blend-color" />
       <div
         aria-hidden
-        className="absolute inset-0 bg-linear-to-t from-[#050713]/55 via-transparent to-transparent"
+        className="absolute inset-0 bg-linear-to-t from-[#000000]/55 via-transparent to-transparent"
       />
     </div>
   );
