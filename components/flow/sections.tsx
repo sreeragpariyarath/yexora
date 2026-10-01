@@ -10,6 +10,14 @@ import Works from "./Works";
 // update the tracks when adding, removing or resizing one.
 // Content rules: no founder names, no game development or training, location is "India".
 
+// About highlights. Drawn from the company's registered objects (no invented figures);
+// game development and training are left out on purpose.
+const ABOUT_POINTS = [
+  ["What we build", "Web and mobile apps, enterprise software, SaaS products and cloud platforms"],
+  ["Immersive & AI", "AR, VR, XR and 3D visualisation, plus AI, machine learning, data analytics and automation"],
+  ["Who we serve", "Education, healthcare, manufacturing, engineering, architecture, real estate, retail and more"],
+] as const;
+
 // Mobile: copy centred near the bottom. Desktop: per-section placement from the reference.
 const PIN = "sticky top-0 h-screen w-full flex items-end justify-center text-center px-6 sm:px-10 pb-[14vh] lg:pb-0";
 
@@ -42,9 +50,22 @@ export default function FlowSections() {
             revealOnPin
             eyebrow="About us"
             title="One Team. Every Layer of Technology."
-            body="Yexora IT Solutions is an Indian technology company bringing software, immersive tech and AI under one roof — from idea to launch and beyond."
+            body="Yexora IT Solutions is an Indian technology company that designs, builds and supports software, immersive experiences and AI solutions for businesses, institutions and government organisations."
             className="max-w-xl lg:max-w-[34vw]"
-          />
+          >
+            <p className="font-poppins text-sm sm:text-base lg:text-[1.02vw] leading-relaxed text-white/90 mt-4 max-w-[34rem] mx-auto lg:mx-0">
+              We handle the whole journey — design, development, testing, deployment and ongoing support — so you
+              work with one accountable team instead of juggling vendors.
+            </p>
+            <dl className="mt-6 hidden sm:grid gap-2.5 text-left font-poppins">
+              {ABOUT_POINTS.map(([label, text]) => (
+                <div key={label} className="glass-tile px-4 py-3">
+                  <dt className="text-[10px] lg:text-[0.68vw] uppercase tracking-[0.18em] text-white/70">{label}</dt>
+                  <dd className="mt-1 text-[13px] lg:text-[0.9vw] leading-snug text-white">{text}</dd>
+                </div>
+              ))}
+            </dl>
+          </CopyBlock>
         </div>
       </section>
 
