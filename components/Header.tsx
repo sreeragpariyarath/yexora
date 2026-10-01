@@ -14,7 +14,7 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 // Desktop has no Contact link (the "Get started" pill goes there); the phone menu keeps it
-const MENU_ITEMS: NavItem[] = [{ label: "HOME", href: "/" }, ...NAV_ITEMS, { label: "CONTACT", href: "#contact" }];
+const MENU_ITEMS: NavItem[] = [{ label: "HOME", href: "#home" }, ...NAV_ITEMS, { label: "CONTACT", href: "#contact" }];
 
 interface HeaderProps {
   className?: string;
@@ -30,7 +30,7 @@ export default function Header({ className = "" }: HeaderProps) {
     >
       {/* Logo · nav (centred on desktop) · actions */}
       <div className="flex items-center justify-between lg:grid lg:grid-cols-[1fr_auto_1fr] gap-6">
-        <Link href="/" aria-label="Yexora home" className="group inline-flex items-center justify-self-start">
+        <Link href="#home" aria-label="Yexora home" className="group inline-flex items-center justify-self-start">
           <Image src={logo} alt="" priority className="h-11 lg:h-14 w-auto transition-opacity group-hover:opacity-80" />
         </Link>
 
