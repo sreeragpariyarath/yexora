@@ -81,7 +81,7 @@ export default function CopyBlock({
       </p>
       <h2
         className={`font-poppins font-medium tracking-tight leading-[1.08] mt-4 ${
-          hero ? "text-4xl sm:text-5xl lg:text-[3.6vw]" : "text-3xl sm:text-4xl lg:text-[2.5vw]"
+          hero ? "text-[2rem] sm:text-[2.6rem] lg:text-[3vw]" : "text-3xl sm:text-4xl lg:text-[2.5vw]"
         }`}
       >
         {title}
