@@ -1,0 +1,12 @@
+// Cloudflare Workers (static assets) config. `npm run build` writes the site to out/,
+// then `npx wrangler deploy` (or Cloudflare's Git integration) publishes it.
+// Cloudflare Pages ignores this file: there, set the build output directory to `out`.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "yexora",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./out",
+    "not_found_handling": "404-page"
+  }
+}

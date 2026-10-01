@@ -11,10 +11,16 @@ Marketing/landing site for Yexora IT Solutions. Early stage: a single page (`app
 ## Commands
 
 - `npm run dev` — dev server at http://localhost:3000
-- `npm run build` — production build (also runs type checking)
+- `npm run build` — production build (also runs type checking). The site is a **static export** (`output: "export"` in `next.config.ts`): the build writes plain files to `out/`, and there is no server, so don't add API routes, server actions, middleware or anything request-time. `next/image` runs with `images.unoptimized`.
 - `npm run lint` — ESLint (flat config, `eslint-config-next` core-web-vitals + typescript)
 
 There is no test framework configured.
+
+## Deployment and SEO
+
+- Hosted on **Cloudflare** at `https://yexoraitsolutions.com` (apex is canonical; `www` redirects). `wrangler.jsonc` deploys `out/` as a Worker with static assets; on Cloudflare Pages the output directory is `out`. `public/_headers` sets security headers and long caching for `/_next/static/*`. Deploy steps are in `README.md`.
+- Site identity lives in `lib/site.ts` (`SITE_URL`, `SITE_NAME`, `SITE_TAGLINE`, `SITE_DESCRIPTION`, `THEME_COLOR`). `app/layout.tsx` builds `metadata` (title template, description, canonical, Open Graph, Twitter card) and `viewport` (theme colour) from it; `app/robots.ts`, `app/sitemap.ts` and `app/manifest.ts` use it too (all `dynamic = "force-static"` for the export).
+- Icons and previews are file conventions in `app/`: `favicon.ico` (the owner's icon; don't add one to `public/`, it would conflict), `opengraph-image.png` / `twitter-image.png` (1200×630 link-preview card) with `.alt.txt` files. They are static PNGs on purpose: a generated `opengraph-image.tsx` exports as an extensionless file, which static hosts serve without an image content type.
 
 ## Stack notes
 
