@@ -68,7 +68,16 @@ function WorkCard({ work, active }: { work: Work; active: boolean }) {
       className={`w-full will-change-transform origin-bottom ${PLACE[work.from]}`}
       style={{ transform: ENTER[work.from], opacity: "var(--p, 0)" }}
     >
-      <div className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 bg-[#0c0f1f]/80 backdrop-blur-xl shadow-[0_0_80px_rgba(47,107,255,0.25)]">
+      {/* Frame: a lit gradient rim (like the glass panels' edge), a deep drop shadow and a
+          blue glow that brightens on the playing card */}
+      <div
+        className={`relative rounded-[22px] p-[1.5px] bg-linear-to-b from-[#a5cdff]/80 via-accent/45 to-[#4b8cff]/60 transition-shadow duration-700 ${
+          active
+            ? "shadow-[0_40px_90px_-20px_rgba(2,4,14,0.9),0_0_70px_rgba(47,107,255,0.45)]"
+            : "shadow-[0_30px_70px_-20px_rgba(2,4,14,0.85),0_0_40px_rgba(47,107,255,0.15)]"
+        }`}
+      >
+      <div className="relative aspect-video rounded-[20.5px] overflow-hidden bg-[#0c0f1f]">
         {failed ? (
           <div className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(ellipse_at_30%_40%,rgba(47,107,255,0.35),transparent_60%),radial-gradient(ellipse_at_75%_70%,rgba(47,107,255,0.25),transparent_55%)]">
             <span className="font-poppins text-xs tracking-[0.18em] uppercase text-white/60">Video coming soon</span>
@@ -98,6 +107,12 @@ function WorkCard({ work, active }: { work: Work; active: boolean }) {
             />
           </>
         )}
+        {/* Glassy finish over the video: inner edge highlight + a soft sheen from the top */}
+        <div
+          aria-hidden
+          className="absolute inset-0 rounded-[inherit] pointer-events-none shadow-[inset_0_1px_1px_rgba(255,255,255,0.55),inset_0_0_30px_rgba(5,7,19,0.45)] bg-[radial-gradient(120%_60%_at_30%_-10%,rgba(255,255,255,0.12),transparent_55%)]"
+        />
+      </div>
       </div>
     </figure>
   );
