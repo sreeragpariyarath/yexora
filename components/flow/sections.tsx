@@ -3,7 +3,7 @@
 import Contact from "./Contact";
 import CopyBlock from "./CopyBlock";
 import Principles from "./Principles";
-import Services from "./Services";
+import Services from "./ServicesSection";
 import Works from "./Works";
 
 // Real page sections scrolled over the fixed 3D canvas. Every [data-chapter]
