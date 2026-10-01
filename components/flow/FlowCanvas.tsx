@@ -106,7 +106,8 @@ const driveFanB = (f: FlowState): FanDrive => ({ load: 1, grow: f.fanBGrow, wall
 /** Renders the scene from SmoothScroll's shared frame loop, right after Lenis has scrolled. */
 function FrameBridge() {
   const advance = useThree((state) => state.advance);
-  useEffect(() => onFrame((time) => advance(time)), [advance]);
+  // advance() takes seconds (it becomes clock.elapsedTime / delta); rAF time is in ms
+  useEffect(() => onFrame((time) => advance(time / 1000)), [advance]);
   return null;
 }
 
