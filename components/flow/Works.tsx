@@ -152,7 +152,7 @@ export default function Works() {
   }, [reduced]);
 
   return (
-    <section data-chapter id="works" aria-label="Our work" className="relative w-full px-6 sm:px-10 lg:px-[6vw] pt-[12vh] pb-[20vh]">
+    <section data-chapter id="work-videos" aria-label="Work videos" className="relative w-full px-6 sm:px-10 lg:px-[6vw] pt-[12vh] pb-[20vh]">
       <div ref={listRef} className="flex flex-col gap-[14vh] [perspective:1400px] overflow-x-clip">
         {WORKS.map((work, i) => (
           <WorkCard key={work.title} work={work} active={active === i} />

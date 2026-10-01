@@ -62,12 +62,14 @@ export default function FlowSections() {
 
       <Services />
 
-      <section data-chapter id="future" aria-label="What's next" className="relative h-[200vh] w-full">
+      {/* Works intro on the glass card over the hourglass; the videos follow (Works.tsx) */}
+      <section data-chapter id="works" aria-label="Our work" className="relative h-[200vh] w-full">
         <div className={`${PIN} lg:items-end lg:pb-[18vh]`}>
           <CopyBlock
             glass
-            eyebrow="What's next"
-            title="The Future Is Immersive. Let's Build It Together."
+            eyebrow="Selected works"
+            title="Our Work in Motion"
+            body="A look at the software and immersive experiences we've built."
             className="max-w-xl lg:max-w-[42vw]"
           />
         </div>
