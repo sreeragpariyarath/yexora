@@ -41,21 +41,12 @@ export const SERVICES_CONTENT = {
       ],
     },
     {
-      title: "Website Development",
+      title: "Web Development",
       description:
-        "High-performance, SEO-focused business and enterprise websites with interactive, animated experiences.",
+        "High-performance, SEO-focused websites and custom web apps — SaaS platforms, admin dashboards, and API integrations built to scale in the cloud.",
       works: [
         { title: "Brand Portal", meta: "Web / Concept", image: thumb("web-1") },
-        { title: "Launch Microsite", meta: "Web / Concept", image: thumb("web-2") },
-      ],
-    },
-    {
-      title: "Web Application Development",
-      description:
-        "Custom web apps, SaaS platforms, admin dashboards, and API integrations built to scale in the cloud.",
-      works: [
         { title: "Operations Dashboard", meta: "SaaS / Concept", image: thumb("app-1") },
-        { title: "Client Portal", meta: "Web App / Concept", image: thumb("app-2") },
       ],
     },
     {
