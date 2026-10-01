@@ -54,7 +54,7 @@ export interface FanConfig {
   trunk: number;
 }
 
-export const WALL_A = -1;
+export const WALL_A = -5;
 export const WALL_B = 11;
 /** The tail fibre group (fiberShader.ts shapes) is centred here */
 export const TAIL_X = 27;
@@ -62,8 +62,8 @@ export const TAIL_X = 27;
 export const FAN_A: FanConfig = {
   strands: 520,
   seed: 7,
-  start: [-40, 0, 0],
-  node: [-10.5, 0, 0],
+  start: [-44, 0, 0],
+  node: [-14.5, 0, 0],
   wallX: WALL_A,
   free: 7,
   spread: 14,
@@ -85,8 +85,8 @@ export const FAN_B: FanConfig = {
   depth: 0.5,
   // Blooms evenly up and down (no bend)
   bend: 0,
-  // Trunk share ≈ its length share (13.5 of ~21.5 units) so points stay evenly spaced
-  trunk: 0.6,
+  // Trunk share ≈ its length share (17.5 of ~26.5 units) so points stay evenly spaced
+  trunk: 0.66,
 };
 
 // Tail shape ids in fiberShader.ts
@@ -94,9 +94,10 @@ export const SHAPE = { escape: 0, beam: 1, hourglass: 2, scatter: 3 } as const;
 
 const T = {
   camX: track([
-    [0, 0],
-    [1, 1.5],
-    [1.55, 1.5],
+    [0, -4],
+    // About: frame wall A on the left and fan B's node (3) on the right, so the middle is dark for the card
+    [1, -0.4],
+    [1.55, -0.4],
     [2.05, 6.5],
     [2.5, 10],
     [3, TAIL_X],

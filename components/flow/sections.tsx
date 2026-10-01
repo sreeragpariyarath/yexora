@@ -36,9 +36,10 @@ export default function FlowSections() {
       <Hero />
 
       <section data-chapter id="about" className="relative h-[220vh] w-full">
-        <div className={`${PIN} lg:items-center lg:justify-start lg:text-left lg:pl-[30vw]`}>
+        <div className={`${PIN} lg:items-center lg:justify-center lg:text-left`}>
           <CopyBlock
             glass
+            revealOnPin
             eyebrow="About us"
             title="One Team. Every Layer of Technology."
             body="Yexora IT Solutions is an Indian technology company bringing software, immersive tech and AI under one roof — from idea to launch and beyond."

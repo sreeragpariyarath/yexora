@@ -14,17 +14,23 @@ interface CopyBlockProps {
    * and the frosted glass blurs them out right behind the text.
    */
   glass?: boolean;
+  /**
+   * Stay hidden while the section scrolls in, then fade and grow in place once the
+   * section's top reaches the top of the screen (i.e. once the sticky copy is pinned).
+   */
+  revealOnPin?: boolean;
   children?: ReactNode;
   className?: string;
 }
 
-/** Eyebrow + title + body. Fades up once the first time it scrolls into view. */
+/** Eyebrow + title + body. Fades up once the first time it scrolls into view (or grows in place with `revealOnPin`). */
 export default function CopyBlock({
   eyebrow,
   title,
   body,
   hero = false,
   glass = false,
+  revealOnPin = false,
   children,
   className = "",
 }: CopyBlockProps) {
@@ -35,6 +41,8 @@ export default function CopyBlock({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    // revealOnPin watches the section against a band at the top of the viewport
+    const target = (revealOnPin && el.closest("section")) || el;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -42,11 +50,11 @@ export default function CopyBlock({
           observer.disconnect();
         }
       },
-      { threshold: 0.4 }
+      revealOnPin ? { rootMargin: "0px 0px -88% 0px" } : { threshold: 0.4 }
     );
-    observer.observe(el);
+    observer.observe(target);
     return () => observer.disconnect();
-  }, []);
+  }, [revealOnPin]);
 
   const shown = seen || reduced;
 
@@ -55,9 +63,15 @@ export default function CopyBlock({
       ref={ref}
       data-glass={glass ? "" : undefined}
       data-glass-shown={glass ? (shown ? "1" : "0") : undefined}
-      className={`relative isolate text-white transition-[opacity,translate] duration-1000 ease-out ${
-        glass ? "liquid-glass p-7 sm:p-9 lg:p-[2.5vw]" : ""
-      } ${shown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"} ${className}`}
+      className={`relative isolate text-white ease-out ${
+        revealOnPin ? "transition-[opacity,scale] duration-900" : "transition-[opacity,translate] duration-1000"
+      } ${glass ? "liquid-glass p-7 sm:p-9 lg:p-[2.5vw]" : ""} ${
+        shown
+          ? "opacity-100 translate-y-0 scale-100"
+          : revealOnPin
+            ? "opacity-0 scale-95"
+            : "opacity-0 translate-y-4"
+      } ${className}`}
     >
       <p className={`font-poppins font-medium uppercase text-[11px] lg:text-xs tracking-[0.18em] ${glass ? "text-white/80" : "text-white/60"} inline-flex items-center gap-2.5`}>
         <span aria-hidden className="w-2 h-2 rotate-45 border border-white/70" />
