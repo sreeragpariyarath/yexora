@@ -3,7 +3,6 @@
 
 export interface ServiceWork {
   title: string;
-  meta: string;
   image: string;
 }
 
@@ -27,8 +26,8 @@ export const SERVICES_CONTENT = {
       description:
         "Interactive virtual environments, digital twins, and enterprise VR training for industrial, medical, and educational teams.",
       works: [
-        { title: "Training Simulation", meta: "VR / Concept", image: thumb("vr-1") },
-        { title: "Virtual Walkthrough", meta: "AR / Concept", image: thumb("vr-2") },
+        { title: "Training Simulation", image: thumb("vr-1") },
+        { title: "Virtual Walkthrough", image: thumb("vr-2") },
       ],
     },
     {
@@ -36,8 +35,8 @@ export const SERVICES_CONTENT = {
       description:
         "3D assets, animation, and real-time WebGL product visualizers for real estate, manufacturing, and retail.",
       works: [
-        { title: "Product Visualizer", meta: "WebGL / Concept", image: thumb("3d-1") },
-        { title: "Architectural Render", meta: "3D / Concept", image: thumb("3d-2") },
+        { title: "Product Visualizer", image: thumb("3d-1") },
+        { title: "Architectural Render", image: thumb("3d-2") },
       ],
     },
     {
@@ -45,8 +44,8 @@ export const SERVICES_CONTENT = {
       description:
         "High-performance, SEO-focused websites and custom web apps — SaaS platforms, admin dashboards, and API integrations built to scale in the cloud.",
       works: [
-        { title: "Brand Portal", meta: "Web / Concept", image: thumb("web-1") },
-        { title: "Operations Dashboard", meta: "SaaS / Concept", image: thumb("app-1") },
+        { title: "Brand Portal", image: thumb("web-1") },
+        { title: "Operations Dashboard", image: thumb("app-1") },
       ],
     },
     {
@@ -54,8 +53,8 @@ export const SERVICES_CONTENT = {
       description:
         "Native and cross-platform iOS and Android apps, from first prototype to store launch and ongoing updates.",
       works: [
-        { title: "Field Service App", meta: "Mobile / Concept", image: thumb("mobile-1") },
-        { title: "Booking App", meta: "iOS & Android / Concept", image: thumb("mobile-2") },
+        { title: "Field Service App", image: thumb("mobile-1") },
+        { title: "Booking App", image: thumb("mobile-2") },
       ],
     },
     {
@@ -63,8 +62,8 @@ export const SERVICES_CONTENT = {
       description:
         "Machine learning, computer vision, data analytics, and automation that turn your data into decisions.",
       works: [
-        { title: "Vision Inspection", meta: "AI / Concept", image: thumb("ai-1") },
-        { title: "Insights Dashboard", meta: "Data / Concept", image: thumb("ai-2") },
+        { title: "Vision Inspection", image: thumb("ai-1") },
+        { title: "Insights Dashboard", image: thumb("ai-2") },
       ],
     },
     {
@@ -72,8 +71,8 @@ export const SERVICES_CONTENT = {
       description:
         "Cloud architecture, CI/CD pipelines, monitoring, and cybersecurity that keep your products fast and safe.",
       works: [
-        { title: "Cloud Migration", meta: "Cloud / Concept", image: thumb("cloud-1") },
-        { title: "Release Pipeline", meta: "DevOps / Concept", image: thumb("cloud-2") },
+        { title: "Cloud Migration", image: thumb("cloud-1") },
+        { title: "Release Pipeline", image: thumb("cloud-2") },
       ],
     },
     {
@@ -81,8 +80,8 @@ export const SERVICES_CONTENT = {
       description:
         "Research-led interface and experience design for web, mobile, and immersive products, from wireframes to design systems.",
       works: [
-        { title: "Design System", meta: "UI / Concept", image: thumb("ux-1") },
-        { title: "App Redesign", meta: "UX / Concept", image: thumb("ux-2") },
+        { title: "Design System", image: thumb("ux-1") },
+        { title: "App Redesign", image: thumb("ux-2") },
       ],
     },
   ] satisfies Service[],

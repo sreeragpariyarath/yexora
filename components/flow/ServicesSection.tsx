@@ -45,9 +45,6 @@ export default function Services() {
                       <span className="block text-xs lg:text-[0.8vw] font-medium uppercase tracking-[0.12em] text-white">
                         {work.title}
                       </span>
-                      <span className="block mt-1 text-xs lg:text-[0.75vw] uppercase tracking-[0.12em] text-white/55">
-                        {work.meta}
-                      </span>
                     </figcaption>
                   </figure>
                 ))}
