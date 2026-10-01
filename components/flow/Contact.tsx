@@ -1,7 +1,6 @@
 "use client";
 
 import { type ComponentType, type FormEvent, type ReactNode } from "react";
-import Image from "next/image";
 import { ArrowUpRight, Mail, MapPin } from "lucide-react";
 import SocialLinks from "@/components/socials";
 import { EMAIL, LEGAL_NAME, LOCATION } from "@/components/contact";
