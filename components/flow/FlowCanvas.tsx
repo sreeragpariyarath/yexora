@@ -132,10 +132,12 @@ export default function FlowCanvas({ layoutRef }: FlowCanvasProps) {
       <EffectComposer multisampling={0}>
         <Bloom
           mipmapBlur
-          luminanceThreshold={0.05}
+          // Only the bright fibre cores glow, and the glow stays close to them; a lower
+          // threshold / wider radius fogs the empty navy background with a whitish haze
+          luminanceThreshold={0.25}
           luminanceSmoothing={0.3}
-          intensity={1.1}
-          radius={0.75}
+          intensity={1}
+          radius={0.45}
           resolutionScale={0.5}
         />
         {/* Liquid glass lens over the copy panels; after Bloom so it refracts the glow */}

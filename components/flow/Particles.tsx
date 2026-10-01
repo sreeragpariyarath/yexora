@@ -20,10 +20,9 @@ const vertexShader = /* glsl */ `
     p.x += cos(uTime * 0.15 + aRand.x * 20.0) * 0.5;
     p.y += sin(uTime * 0.2 + aRand.y * 20.0) * 0.5;
     vec4 mv = modelViewMatrix * vec4(p, 1.0);
-    // A few large, faint "bokeh" blobs among many small specks
-    float big = step(0.96, aRand.z);
-    gl_PointSize = mix(3.0 + aRand.z * 5.0, 90.0, big) * uPixelRatio * (10.0 / -mv.z);
-    vAlpha = uOpacity * mix(0.35 + 0.65 * aRand.y, 0.12, big);
+    // Small sharp specks only (large soft "bokeh" blobs read as haze on the navy background)
+    gl_PointSize = (3.0 + aRand.z * 5.0) * uPixelRatio * (10.0 / -mv.z);
+    vAlpha = uOpacity * (0.35 + 0.65 * aRand.y);
     gl_Position = projectionMatrix * mv;
   }
 `;
