@@ -164,12 +164,11 @@ export default function Contact() {
         </div>
       </div>
 
-      <footer className="mt-[14vh] pt-10 border-t border-white/10 flex flex-col items-center gap-4 text-center font-poppins">
-        <Image src={logoMark} alt="" className="w-7 h-7 brightness-0 invert opacity-80" />
-        <p className="text-xs sm:text-sm lg:text-[0.95vw] font-medium uppercase tracking-[0.3em] leading-relaxed text-white/80">
-          {LEGAL_NAME}
-        </p>
-        <p className="text-[11px] tracking-[0.12em] text-white/40">© 2026 · {LOCATION}</p>
+      <footer className="mt-[12vh] pt-6 border-t border-white/[0.07] flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-center font-poppins text-[10px] lg:text-[11px] uppercase tracking-[0.24em] text-white/45">
+        <Image src={logoMark} alt="" className="w-3.5 h-3.5 brightness-0 invert opacity-60" />
+        <span className="text-white/65">{LEGAL_NAME}</span>
+        <span aria-hidden className="text-white/25">·</span>
+        <span>© 2026 {LOCATION}</span>
       </footer>
     </section>
   );
