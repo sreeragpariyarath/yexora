@@ -10,7 +10,7 @@ import { SERVICES_CONTENT } from "./services";
  */
 export default function Services() {
   return (
-    <section data-chapter id="services" aria-label="Services" className="relative w-full px-6 sm:px-10 lg:px-[6vw] pt-[24vh] pb-[18vh]">
+    <section data-chapter id="services" aria-label="Services" className="relative w-full px-6 sm:px-10 lg:px-[6vw] pt-[24vh] pb-[6vh]">
       <CopyBlock
         glass
         eyebrow="What we do"

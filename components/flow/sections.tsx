@@ -64,7 +64,7 @@ export default function FlowSections() {
 
       {/* Works intro on the glass card over the hourglass; the videos follow (Works.tsx) */}
       <section data-chapter id="works" aria-label="Our work" className="relative h-[200vh] w-full">
-        <div className={`${PIN} lg:items-end lg:pb-[18vh]`}>
+        <div className={`${PIN} lg:items-start lg:pt-[20vh]`}>
           <CopyBlock
             glass
             eyebrow="Selected works"
