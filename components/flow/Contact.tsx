@@ -2,21 +2,13 @@
 
 import { type ComponentType, type FormEvent, type ReactNode } from "react";
 import Image from "next/image";
-import { useLenis } from "lenis/react";
-import { ArrowUp, ArrowUpRight, Mail, MapPin, Phone } from "lucide-react";
+import { ArrowUpRight, Mail, MapPin, Phone } from "lucide-react";
 import SocialLinks from "@/components/socials";
-import { COMPANY, EMAIL, LOCATION, PHONE } from "@/components/contact";
+import { EMAIL, LEGAL_NAME, LOCATION, PHONE } from "@/components/contact";
 import logoMark from "@/public/logo-mark.png";
 import CopyBlock from "./CopyBlock";
 import ServiceSelect from "./ServiceSelect";
 import { SERVICES } from "./services";
-
-const FOOTER_LINKS = [
-  { label: "About", href: "#about" },
-  { label: "Services", href: "#services" },
-  { label: "Works", href: "#works" },
-  { label: "Contact", href: "#contact" },
-];
 
 // Floating-label fields: the label sits in the field and floats up on focus or once
 // filled (CSS only, via `peer` + `placeholder-shown`; the placeholder is a single space)
@@ -89,8 +81,6 @@ function Detail({ icon: Icon, label, children, href }: {
  * submitting opens the visitor's mail app with the enquiry filled in.
  */
 export default function Contact() {
-  const lenis = useLenis();
-
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
@@ -99,11 +89,6 @@ export default function Contact() {
     const subject = `Project enquiry — ${services[0] ?? "New project"}`;
     const body = `Name: ${data.get("name")}\nEmail: ${data.get("email")}\nServices: ${needs}\n\n${data.get("message")}`;
     window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  };
-
-  const toTop = () => {
-    if (lenis) lenis.scrollTo(0);
-    else window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -179,30 +164,12 @@ export default function Contact() {
         </div>
       </div>
 
-      <footer className="mt-[14vh] pt-8 border-t border-white/10 flex flex-col lg:flex-row items-center justify-between gap-6 font-poppins text-xs text-white/50">
-        <div className="flex items-center gap-3">
-          <Image src={logoMark} alt="" className="w-6 h-6 brightness-0 invert opacity-80" />
-          <span>
-            © 2026 {COMPANY} · {LOCATION}
-          </span>
-        </div>
-        <nav aria-label="Footer" className="flex items-center gap-6 uppercase tracking-[0.16em]">
-          {FOOTER_LINKS.map((l) => (
-            <a key={l.href} href={l.href} className="hover:text-white transition-colors">
-              {l.label}
-            </a>
-          ))}
-        </nav>
-        <button
-          type="button"
-          onClick={toTop}
-          className="group inline-flex items-center gap-2 uppercase tracking-[0.16em] hover:text-white transition-colors cursor-pointer"
-        >
-          Back to top
-          <span className="w-8 h-8 rounded-full border border-white/15 flex items-center justify-center transition-[border-color,translate] group-hover:border-white/40 group-hover:-translate-y-0.5">
-            <ArrowUp className="w-3.5 h-3.5" />
-          </span>
-        </button>
+      <footer className="mt-[14vh] pt-10 border-t border-white/10 flex flex-col items-center gap-4 text-center font-poppins">
+        <Image src={logoMark} alt="" className="w-7 h-7 brightness-0 invert opacity-80" />
+        <p className="text-xs sm:text-sm lg:text-[0.95vw] font-medium uppercase tracking-[0.3em] leading-relaxed text-white/80">
+          {LEGAL_NAME}
+        </p>
+        <p className="text-[11px] tracking-[0.12em] text-white/40">© 2026 · {LOCATION}</p>
       </footer>
     </section>
   );
