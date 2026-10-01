@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import useReducedMotion from "./useReducedMotion";
+import { onFrame } from "@/lib/frame";
 
 interface CopyBlockProps {
   eyebrow: string;
@@ -73,13 +74,19 @@ export default function CopyBlock({
         setSeen(true);
       }
     };
-    const frame = requestAnimationFrame(update);
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
+    // Run on the shared frame loop (lib/frame.ts), right after Lenis scrolls, so this moves
+    // in the same frame as the page. A window "scroll" listener fires a frame late (jitter).
+    let lastY = NaN;
+    const stop = onFrame(() => {
+      if (window.scrollY === lastY) return;
+      lastY = window.scrollY;
+      update();
+    });
+    const onResize = () => update();
+    window.addEventListener("resize", onResize);
     return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
+      stop();
+      window.removeEventListener("resize", onResize);
     };
   }, [revealOnPin, reduced]);
 

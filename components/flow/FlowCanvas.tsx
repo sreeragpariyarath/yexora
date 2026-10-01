@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type RefObject } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { PerformanceMonitor } from "@react-three/drei";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import * as THREE from "three";
@@ -11,6 +11,7 @@ import LiquidGlass from "./glassLens";
 import Particles from "./Particles";
 import { FAN_A, FAN_B, chapterAt, createFlowState, evaluate, type FlowState } from "./timeline";
 import useReducedMotion from "./useReducedMotion";
+import { onFrame } from "@/lib/frame";
 
 export interface SectionLayout {
   /** Document top of each [data-chapter] section, in order */
@@ -102,6 +103,13 @@ function CameraRig({ flowRef, reduced }: { flowRef: RefObject<FlowState>; reduce
 const driveFanA = (f: FlowState): FanDrive => ({ load: f.load, grow: 1, wall: f.fanAWall, alpha: f.fanAAlpha });
 const driveFanB = (f: FlowState): FanDrive => ({ load: 1, grow: f.fanBGrow, wall: f.fanBWall, alpha: f.fanBAlpha });
 
+/** Renders the scene from SmoothScroll's shared frame loop, right after Lenis has scrolled. */
+function FrameBridge() {
+  const advance = useThree((state) => state.advance);
+  useEffect(() => onFrame((time) => advance(time)), [advance]);
+  return null;
+}
+
 function Fallback() {
   return (
     <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_50%,rgba(47,107,255,0.35),transparent_60%),radial-gradient(ellipse_at_70%_60%,rgba(47,107,255,0.25),transparent_55%)]" />
@@ -116,11 +124,13 @@ export default function FlowCanvas({ layoutRef }: FlowCanvasProps) {
   return (
     <Canvas
       dpr={dpr}
+      frameloop="never"
       gl={{ antialias: false, powerPreference: "high-performance" }}
       camera={{ fov: 45, position: [0, 0, 12], near: 0.1, far: 120 }}
       fallback={<Fallback />}
     >
       {/* Drop resolution on slow devices instead of dropping frames */}
+      <FrameBridge />
       <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(1.5)} />
       <color attach="background" args={["#000000"]} />
       <Driver layoutRef={layoutRef} flowRef={flowRef} reduced={reduced} />

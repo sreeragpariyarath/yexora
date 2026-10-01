@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import useReducedMotion from "./useReducedMotion";
+import { onFrame } from "@/lib/frame";
 
 type From = "left" | "right" | "bottom";
 
@@ -161,13 +162,19 @@ export default function Works() {
       // Only re-renders when the active card changes
       setActive(best);
     };
-    const frame = requestAnimationFrame(update);
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
+    // Run on the shared frame loop (lib/frame.ts), right after Lenis scrolls, so this moves
+    // in the same frame as the page. A window "scroll" listener fires a frame late (jitter).
+    let lastY = NaN;
+    const stop = onFrame(() => {
+      if (window.scrollY === lastY) return;
+      lastY = window.scrollY;
+      update();
+    });
+    const onResize = () => update();
+    window.addEventListener("resize", onResize);
     return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
+      stop();
+      window.removeEventListener("resize", onResize);
     };
   }, [reduced]);
 
