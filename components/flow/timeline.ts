@@ -96,8 +96,8 @@ const T = {
   camX: track([
     [0, -4],
     // About: frame wall A on the left and fan B's node (3) on the right, so the middle is dark for the card
-    [1, -0.4],
-    [1.55, -0.4],
+    [1, 0.4],
+    [1.55, 0.4],
     [2.05, 6.5],
     [2.5, 10],
     [3, TAIL_X],

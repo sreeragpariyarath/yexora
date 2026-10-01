@@ -85,7 +85,7 @@ export default function CopyBlock({
         {title}
       </h2>
       {body && (
-        <p className={`font-poppins text-sm sm:text-base lg:text-[1.02vw] leading-relaxed ${glass ? "text-white/90" : "text-white/75"} mt-5 max-w-[34rem] mx-auto lg:mx-0`}>
+        <p className={`font-poppins text-sm sm:text-base lg:text-[1.02vw] leading-relaxed ${glass ? "text-white/90" : "text-white/75"} mt-5 max-w-[34rem] lg:max-w-none mx-auto lg:mx-0`}>
           {body}
         </p>
       )}
