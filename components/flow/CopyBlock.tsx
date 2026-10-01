@@ -19,6 +19,8 @@ interface CopyBlockProps {
    * section's top reaches the top of the screen (i.e. once the sticky copy is pinned).
    */
   revealOnPin?: boolean;
+  /** Darken the card's body, for cards that sit over a very bright part of the fibres */
+  scrim?: boolean;
   children?: ReactNode;
   className?: string;
 }
@@ -31,6 +33,7 @@ export default function CopyBlock({
   hero = false,
   glass = false,
   revealOnPin = false,
+  scrim = false,
   children,
   className = "",
 }: CopyBlockProps) {
@@ -73,6 +76,7 @@ export default function CopyBlock({
             : "opacity-0 translate-y-4"
       } ${className}`}
     >
+      {scrim && <div aria-hidden className="absolute inset-0 -z-10 rounded-[inherit] bg-[#050713]/60 pointer-events-none" />}
       <p className={`font-poppins font-medium uppercase text-[11px] lg:text-xs tracking-[0.18em] ${glass ? "text-white/80" : "text-white/60"} inline-flex items-center gap-2.5`}>
         <span aria-hidden className="w-2 h-2 rotate-45 border border-white/70" />
         {eyebrow}
