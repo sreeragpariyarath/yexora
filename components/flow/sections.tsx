@@ -36,7 +36,7 @@ export default function FlowSections() {
     <>
       <Hero />
 
-      <section data-chapter id="about" className="relative h-[220vh] w-full">
+      <section data-chapter id="about" className="relative h-[160vh] w-full">
         <div className={`${PIN} lg:items-center lg:justify-start lg:text-left lg:pl-[30vw]`}>
           <CopyBlock
             glass
