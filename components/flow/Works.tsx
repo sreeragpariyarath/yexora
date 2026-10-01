@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import CopyBlock from "./CopyBlock";
 import useReducedMotion from "./useReducedMotion";
 
 type From = "left" | "right" | "bottom";
@@ -153,14 +152,8 @@ export default function Works() {
   }, [reduced]);
 
   return (
-    <section data-chapter id="works" aria-label="Our work" className="relative w-full px-6 sm:px-10 lg:px-[6vw] pt-[30vh] pb-[20vh]">
-      <CopyBlock
-        eyebrow="Selected works"
-        title="Our Work in Motion"
-        body="A look at the software and immersive experiences we've built."
-        className="text-center lg:text-left max-w-xl lg:max-w-[40vw]"
-      />
-      <div ref={listRef} className="mt-[12vh] flex flex-col gap-[14vh] [perspective:1400px] overflow-x-clip">
+    <section data-chapter id="works" aria-label="Our work" className="relative w-full px-6 sm:px-10 lg:px-[6vw] pt-[12vh] pb-[20vh]">
+      <div ref={listRef} className="flex flex-col gap-[14vh] [perspective:1400px] overflow-x-clip">
         {WORKS.map((work, i) => (
           <WorkCard key={work.title} work={work} active={active === i} />
         ))}
