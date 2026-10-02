@@ -6,7 +6,7 @@ import { SERVICES_CONTENT } from "./services";
 /**
  * Services: each one is a liquid-glass row with its name and description on the left and
  * two example thumbnails on the right (layout from the owner's reference, styled like the
- * rest of the site). Thumbnails are temporary placeholders.
+ * rest of the site).
  */
 export default function Services() {
   return (

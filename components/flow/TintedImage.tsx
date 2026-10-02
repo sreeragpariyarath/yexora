@@ -1,9 +1,6 @@
 import Image from "next/image";
 
-/**
- * Photo tinted into the site's blue palette (desaturated + an accent wash), so stock
- * placeholders and project shots sit on the dark fibre scene instead of fighting it.
- */
+/** Section photo filling its card, in its normal colours (slightly dimmed, full on hover). */
 export default function TintedImage({
   src,
   sizes,

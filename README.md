@@ -37,11 +37,12 @@ To preview the production build locally, serve the `out/` folder with any static
 | 3D scene and scroll timeline | `components/flow/FlowCanvas.tsx`, `components/flow/timeline.ts` |
 | Site name, URL, description, theme colour | `lib/site.ts` |
 | Page title and SEO / social tags | `app/layout.tsx` |
-| Favicon / link-preview image | `app/favicon.ico`, `app/opengraph-image.png`, `app/twitter-image.png` |
+| Favicon / link-preview image | `app/favicon.ico`, `app/opengraph-image.png`, `app/twitter-image.png` (1200×630) |
+| Section photos | `public/images/web/*.webp` (1280px WebP), listed in `components/flow/services.ts` |
 
 `CLAUDE.md` has a detailed walkthrough of how the scene, timeline and components fit together.
 
-Still to fill in: the real email and phone number (`components/contact.ts`) and the social profile URLs (`components/socials.tsx`).
+To add a photo, convert it to a 1280px-wide WebP (about 100 KB) in `public/images/web/` and reference it with `projectImage("name")`. Large originals don't belong in `public/`: everything there is uploaded to the live site.
 
 ## Videos (Cloudflare R2)
 

@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-// A 3× copy of logo2.png sized for the header (the original is 3623×2192, decoded in full for a 56px logo)
+// A 278×168 copy of the logo sized for the header (the 3623×2192 original was decoded in full for a 56px logo)
 import logo from "@/public/logo2-header.png";
 import { GLASS_PILL, GlassPillParts } from "./GlassPill";
 import MenuIcon from "./MenuIcon";

@@ -6,7 +6,7 @@ import TintedImage from "./TintedImage";
 import { projectImage } from "./services";
 
 // Working principles as a bento grid of liquid-glass cards (layout from the owner's
-// reference, styled like the rest of the site). Photos are temporary placeholders.
+// reference, styled like the rest of the site).
 
 const TITLE = "font-poppins font-medium tracking-tight leading-[1.08] text-white";
 const BODY = "font-poppins text-sm lg:text-[0.95vw] leading-relaxed text-white/85";

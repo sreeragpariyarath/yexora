@@ -13,14 +13,11 @@ export interface Service {
 }
 
 /**
- * A project image from public/images/web/ — compressed 1280px WebP copies of the owner's
- * PNGs in public/images/ (about 100 KB each instead of 2 MB; images aren't optimised in
- * the static export). Name = the PNG's name, lower-case, dashes for spaces.
+ * A project image from public/images/web/: 1280px WebP copies (about 100 KB each) of the
+ * owner's PNGs, which aren't kept in the repo (images aren't optimised in the static export).
+ * Name = the image's name, lower-case, dashes for spaces.
  */
 export const projectImage = (name: string) => `/images/web/${name}.webp`;
-
-/** Temporary placeholder photo (picsum.photos, stable per seed), for services without real images yet. */
-export const thumb = (seed: string, w = 800, h = 560) => `https://picsum.photos/seed/yexora-${seed}/${w}/${h}`;
 
 export const SERVICES_CONTENT = {
   index: "04",
@@ -70,8 +67,8 @@ export const SERVICES_CONTENT = {
       description:
         "Research-led interface and experience design for web, mobile, and immersive products, from wireframes to design systems.",
       works: [
-        { title: "Design System", image: thumb("ux-1") },
-        { title: "App Redesign", image: thumb("ux-2") },
+        { title: "Design System", image: projectImage("design-system") },
+        { title: "App Redesign", image: projectImage("app-redesign") },
       ],
     },
   ] satisfies Service[],
