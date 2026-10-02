@@ -11,9 +11,17 @@ const NEEDED: ReadyKey[] = ["scene", "fonts"];
 const MIN_MS = 1400;
 /** Reveal anyway after this, so a slow device or a stuck task can never trap the page */
 const MAX_MS = 15000;
+/**
+ * The loader starts leaving (its logo fades) this long before the page is told it's revealed.
+ * The reveal sets off a burst of work (re-renders, Lenis, the hero intro); starting the
+ * loader's compositor fade first means that burst can't stall it.
+ */
+const REVEAL_DELAY_MS = 350;
 
 const ready = new Set<ReadyKey>();
 const listeners = new Set<() => void>();
+const leaveListeners = new Set<() => void>();
+let leaving = false;
 let revealed = false;
 let started = false;
 
@@ -23,18 +31,25 @@ function reveal() {
   listeners.forEach((listener) => listener());
 }
 
+function leave() {
+  if (leaving) return;
+  leaving = true;
+  leaveListeners.forEach((listener) => listener());
+  setTimeout(reveal, REVEAL_DELAY_MS);
+}
+
 function check() {
-  if (revealed || !NEEDED.every((key) => ready.has(key))) return;
+  if (leaving || !NEEDED.every((key) => ready.has(key))) return;
   const wait = MIN_MS - performance.now();
-  if (wait > 0) setTimeout(reveal, wait);
-  else reveal();
+  if (wait > 0) setTimeout(leave, wait);
+  else leave();
 }
 
 /** Starts the safety timeout. Called once by the Loader. */
 export function startLoading() {
   if (started) return;
   started = true;
-  setTimeout(reveal, Math.max(MAX_MS - performance.now(), 0));
+  setTimeout(leave, Math.max(MAX_MS - performance.now(), 0));
   check();
 }
 
@@ -70,7 +85,19 @@ function subscribe(listener: () => void) {
   };
 }
 
-/** True once the loader has started to fade out (always false in the static HTML). */
+function subscribeLeaving(listener: () => void) {
+  leaveListeners.add(listener);
+  return () => {
+    leaveListeners.delete(listener);
+  };
+}
+
+/** True once loading is done and the loader has started to fade out (Loader only). */
+export function useLeaving() {
+  return useSyncExternalStore(subscribeLeaving, () => leaving, () => false);
+}
+
+/** True once the page is revealed, shortly after the loader starts fading (always false in the static HTML). */
 export function useRevealed() {
   return useSyncExternalStore(subscribe, isRevealed, () => false);
 }

@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useLenis } from "lenis/react";
-import { markReady, startLoading, useRevealed } from "@/lib/loading";
+import { markReady, startLoading, useLeaving, useRevealed } from "@/lib/loading";
 
-// Matches the fade-out duration below
-const FADE_MS = 700;
+// The logo fades out first (500ms), the black layer follows after 300ms (700ms);
+// unmount once both are done
+const EXIT_MS = 1100;
 
 /**
  * Full-screen loading screen: the Yexora mark spins one full turn, rests a second, and
@@ -15,6 +16,7 @@ const FADE_MS = 700;
  * download, so the first scroll is smooth. See lib/loading.ts for when it lifts.
  */
 export default function Loader() {
+  const leaving = useLeaving();
   const revealed = useRevealed();
   const [gone, setGone] = useState(false);
   const lenis = useLenis();
@@ -36,10 +38,10 @@ export default function Loader() {
   }, [lenis, revealed]);
 
   useEffect(() => {
-    if (!revealed) return;
-    const timer = setTimeout(() => setGone(true), FADE_MS);
+    if (!leaving) return;
+    const timer = setTimeout(() => setGone(true), EXIT_MS);
     return () => clearTimeout(timer);
-  }, [revealed]);
+  }, [leaving]);
 
   if (gone) return null;
 
@@ -48,14 +50,22 @@ export default function Loader() {
       id="site-loader"
       role="status"
       aria-live="polite"
-      aria-busy={!revealed}
-      className={`fixed inset-0 z-[100] flex items-center justify-center bg-[#000000] transition-opacity duration-700 ease-out ${
-        revealed ? "opacity-0 pointer-events-none" : "opacity-100"
+      aria-busy={!leaving}
+      className={`fixed inset-0 z-[100] flex items-center justify-center bg-[#000000] transition-opacity duration-700 ease-out will-change-[opacity] ${
+        leaving ? "opacity-0 pointer-events-none delay-300" : "opacity-100"
       }`}
     >
+      {/* The logo fades and shrinks away first (it keeps spinning: the spin is on the img,
+          the fade on this wrapper), then the black layer fades and the page shows through */}
+      <span
+        className={`flex transition-[opacity,scale] duration-500 ease-out will-change-[opacity,scale] ${
+          leaving ? "opacity-0 scale-[0.85]" : "opacity-100 scale-100"
+        }`}
+      >
       {/* eslint-disable-next-line @next/next/no-img-element -- a plain img is in the static HTML with no wrapper or lazy loading */}
       <img src="/logo-mark-loader.png" alt="" width={256} height={255} fetchPriority="high" className="loader-mark w-12 sm:w-14 h-auto will-change-transform" />
-      <span className="sr-only">{revealed ? "Loaded" : "Loading"}</span>
+      </span>
+      <span className="sr-only">{leaving ? "Loaded" : "Loading"}</span>
     </div>
   );
 }
