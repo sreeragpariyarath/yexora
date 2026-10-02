@@ -13,6 +13,7 @@ import SceneFallback from "./SceneFallback";
 import { FAN_A, FAN_B, chapterAt, createFlowState, evaluate, type FlowState } from "./timeline";
 import useReducedMotion from "./useReducedMotion";
 import { onFrame } from "@/lib/frame";
+import { media } from "@/lib/media";
 import { isRevealed, markReady, onRevealed, whenLoaderResting } from "@/lib/loading";
 
 export interface SectionLayout {
@@ -112,13 +113,17 @@ function FrameBridge({ flowRef }: { flowRef: RefObject<FlowState> }) {
   // advance() takes seconds (it becomes clock.elapsedTime / delta); rAF time is in ms.
   // Nothing renders until Warmup's parallel shader compile is done: rendering earlier
   // compiles the same shaders synchronously, which can freeze the loader's spinning logo.
-  useEffect(
-    () =>
-      onFrame((time) => {
-        if (!flowRef.current.compiling) advance(time / 1000);
-      }, "render"),
-    [advance, flowRef]
-  );
+  // While a Works video plays, only redraw when the page scrolls (see lib/media.ts).
+  useEffect(() => {
+    let lastY = NaN;
+    return onFrame((time) => {
+      if (flowRef.current.compiling) return;
+      const y = window.scrollY;
+      if (media.videoActive && y === lastY) return;
+      lastY = y;
+      advance(time / 1000);
+    }, "render");
+  }, [advance, flowRef]);
   return null;
 }
 

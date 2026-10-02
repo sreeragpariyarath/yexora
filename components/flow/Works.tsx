@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import useReducedMotion from "./useReducedMotion";
 import { onFrame } from "@/lib/frame";
+import { media } from "@/lib/media";
 import { cancelIdle, onRevealed, whenIdle } from "@/lib/loading";
 
 type From = "left" | "right" | "bottom";
@@ -187,6 +188,7 @@ export default function Works() {
       cards.forEach((card, i) => card.style.setProperty("--p", progress[i].toFixed(4)));
       // Only re-renders when the active card changes
       setActive(best);
+      media.videoActive = best >= 0;
     };
     // Run on the shared frame loop (lib/frame.ts), right after Lenis scrolls, so this moves
     // in the same frame as the page. A window "scroll" listener fires a frame late (jitter).
@@ -205,6 +207,7 @@ export default function Works() {
     };
     window.addEventListener("resize", onResize);
     return () => {
+      media.videoActive = false;
       stopRead();
       stopWrite();
       window.removeEventListener("resize", onResize);
