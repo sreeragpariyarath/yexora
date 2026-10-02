@@ -232,8 +232,10 @@ export default function Works() {
   }, []);
 
   return (
-    <section data-chapter id="work-videos" aria-label="Work videos" className="relative w-full px-6 sm:px-10 lg:px-[6vw] pt-[12vh] pb-[20vh]">
-      <div ref={listRef} className="relative flex flex-col gap-[14vh] [perspective:1400px] overflow-x-clip">
+    <section data-chapter id="work-videos" aria-label="Work videos" className="relative w-full overflow-x-clip px-6 sm:px-10 lg:px-[6vw] pt-[12vh] pb-[20vh]">
+      {/* Clipped on the section (full screen width), not on the list: the list sits inside the side
+          padding, so clipping it made the cards appear out of an invisible box, not the screen edge */}
+      <div ref={listRef} className="relative flex flex-col gap-[14vh] [perspective:1400px]">
         {WORKS.map((work, i) => (
           <WorkCard key={work.title} work={work} active={active === i} />
         ))}
