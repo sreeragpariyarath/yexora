@@ -55,12 +55,25 @@ function WorkCard({ work, active }: { work: Work; active: boolean }) {
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  // Only the active card plays (muted, so browsers always allow it)
+  // Only the active card plays (muted, so browsers always allow it). A play() request can be
+  // refused or stall while a large video is still loading (or when a pause interrupts it), which
+  // left the card stuck on its first frame; so while it's active, keep retrying whenever the
+  // video reports it has more data, and if it stops on its own.
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
-    if (active) video.play().catch(() => {});
-    else video.pause();
+    if (!active) {
+      video.pause();
+      return;
+    }
+    const play = () => {
+      if (video.paused) video.play().catch(() => {});
+    };
+    if (video.preload !== "auto") video.preload = "auto";
+    play();
+    const events = ["loadeddata", "canplay", "canplaythrough", "stalled", "pause"] as const;
+    events.forEach((type) => video.addEventListener(type, play));
+    return () => events.forEach((type) => video.removeEventListener(type, play));
   }, [active]);
 
   return (
