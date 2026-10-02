@@ -5,7 +5,7 @@ import { useLenis } from "lenis/react";
 import MenuIcon from "./MenuIcon";
 import MenuLink from "./MenuLink";
 import SocialLinks from "./socials";
-import { EMAIL, PHONE } from "./contact";
+import { EMAIL } from "./contact";
 
 export interface NavItem {
   label: string;
@@ -119,9 +119,6 @@ export default function MenuOverlay({ open, onClose, items }: MenuOverlayProps) 
               <SocialLinks />
             </div>
     
-            <a href={`tel:${PHONE.replace(/\s/g, "")}`} className="border-b border-white/80 hover:border-accent hover:text-accent transition-colors">
-              {PHONE}
-            </a>
           </div>
         </div>
       </div>
