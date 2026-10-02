@@ -5,17 +5,14 @@ import useReducedMotion from "./useReducedMotion";
 import { onFrame } from "@/lib/frame";
 import { media } from "@/lib/media";
 import { cancelIdle, onRevealed, whenIdle } from "@/lib/loading";
-import { switchToLiteVideos, useVideoQuality } from "@/lib/videoQuality";
 
 type From = "left" | "right" | "bottom";
 
 interface Work {
   title: string;
   category: string;
-  /** Full-quality file, served from Cloudflare R2 (see MEDIA_BASE) */
+  /** Served from Cloudflare R2 (see MEDIA_BASE) */
   src: string;
-  /** Light (~10 MB) version for phones, slow connections and low-end PCs (see lib/videoQuality.ts) */
-  lite: string;
   poster?: string;
   from: From;
 }
@@ -25,9 +22,9 @@ const MEDIA_BASE = "https://media.yexoraitsolutions.com/videos";
 
 // TODO: real titles and categories for each video.
 const WORKS: Work[] = [
-  { title: "Project One", category: "Immersive experience", src: `${MEDIA_BASE}/work1.mp4`, lite: `${MEDIA_BASE}/work1-lite.mp4`, from: "left" },
-  { title: "Project Two", category: "Web platform", src: `${MEDIA_BASE}/work2.mp4`, lite: `${MEDIA_BASE}/work2-lite.mp4`, from: "right" },
-  { title: "Project Three", category: "AR / VR solution", src: `${MEDIA_BASE}/work3.mp4`, lite: `${MEDIA_BASE}/work3-lite.mp4`, from: "bottom" },
+  { title: "Project One", category: "Immersive experience", src: `${MEDIA_BASE}/work1.mp4`, from: "left" },
+  { title: "Project Two", category: "Web platform", src: `${MEDIA_BASE}/work2.mp4`, from: "right" },
+  { title: "Project Three", category: "AR / VR solution", src: `${MEDIA_BASE}/work3.mp4`, from: "bottom" },
 ];
 
 // Entrance per direction, driven by the --p CSS var (0 → 1) so scrolling never re-renders React
@@ -46,43 +43,18 @@ const PLACE: Record<From, string> = {
 // A card can become the active one once this much of it is on screen
 const MIN_VISIBLE = 0.55;
 
-// A full-quality video that drops more than this share of its frames (measured every
-// CHECK_MS while playing) is stuttering on this device: switch everything to the light files
-const MAX_DROPPED = 0.15;
-const CHECK_MS = 2000;
-
 function WorkCard({ work, active }: { work: Work; active: boolean }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [failed, setFailed] = useState(false);
-  const quality = useVideoQuality();
-  // Set when the light file is missing or broken, so this card falls back to full quality
-  const [liteFailed, setLiteFailed] = useState(false);
-  const src = quality === null ? undefined : quality === "lite" && !liteFailed ? work.lite : work.src;
-  const resumeAt = useRef(0);
 
-  // Switching files mid-play (full quality → light) carries on from the same moment
+  // The server-rendered <video> starts loading before hydration, so a fast failure
+  // (e.g. a missing file) can fire before React's onError is attached
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || !src) return;
-    const t = resumeAt.current;
-    if (t <= 0) return;
-    const seek = () => {
-      video.currentTime = t;
-      resumeAt.current = 0;
-    };
-    video.addEventListener("loadedmetadata", seek, { once: true });
-    return () => video.removeEventListener("loadedmetadata", seek);
-  }, [src]);
-
-  const onError = () => {
-    const video = videoRef.current;
-    if (src === work.lite) {
-      resumeAt.current = video?.currentTime ?? 0;
-      setLiteFailed(true);
-    } else {
-      setFailed(true);
-    }
-  };
+    if (!video?.error) return;
+    const frame = requestAnimationFrame(() => setFailed(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   // Only the active card plays (muted, so browsers always allow it). A play() request can be
   // refused or stall while a large video is still loading (or when a pause interrupts it), which
@@ -102,28 +74,8 @@ function WorkCard({ work, active }: { work: Work; active: boolean }) {
     play();
     const events = ["loadeddata", "canplay", "canplaythrough", "stalled", "pause"] as const;
     events.forEach((type) => video.addEventListener(type, play));
-
-    // Stutter check for the full-quality file: if this device drops too many frames, move
-    // every video to the light version (resuming from the same moment)
-    let last = video.getVideoPlaybackQuality?.();
-    const timer = window.setInterval(() => {
-      if (src !== work.src || quality !== "hq" || video.paused) return;
-      const now = video.getVideoPlaybackQuality?.();
-      if (!now || !last) return;
-      const total = now.totalVideoFrames - last.totalVideoFrames;
-      const dropped = now.droppedVideoFrames - last.droppedVideoFrames;
-      last = now;
-      if (total > 30 && dropped / total > MAX_DROPPED) {
-        resumeAt.current = video.currentTime;
-        switchToLiteVideos();
-      }
-    }, CHECK_MS);
-
-    return () => {
-      window.clearInterval(timer);
-      events.forEach((type) => video.removeEventListener(type, play));
-    };
-  }, [active, src, quality, work.src]);
+    return () => events.forEach((type) => video.removeEventListener(type, play));
+  }, [active]);
 
   return (
     <figure
@@ -152,14 +104,14 @@ function WorkCard({ work, active }: { work: Work; active: boolean }) {
           <>
             <video
               ref={videoRef}
-              src={src}
+              src={work.src}
               poster={work.poster}
               aria-label={work.title}
               muted
               loop
               playsInline
               preload="metadata"
-              onError={onError}
+              onError={() => setFailed(true)}
               // No filter at all on the playing video (even saturate(100%) keeps it on the slow path)
               className={`absolute inset-0 w-full h-full object-cover transition-[filter] duration-700 ${
                 active ? "" : "saturate-50"

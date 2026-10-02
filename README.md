@@ -52,8 +52,6 @@ The Works videos are **not** in this repo. They are served from the R2 bucket `y
 - `https://media.yexoraitsolutions.com/videos/work2.mp4`
 - `https://media.yexoraitsolutions.com/videos/work3.mp4`
 
-Each video also has a light version, about 10 MB, named with `-lite` (`work1-lite.mp4`, `work2-lite.mp4`, `work3-lite.mp4`). Phones, slow connections and low-end PCs play the light one; fast PCs play the full one and drop to light if it stutters. If a light file is missing, the full one is used.
-
 To replace a video, upload a new file with the same name to the bucket. To add or rename one, update `WORKS` in `components/flow/Works.tsx`. Export videos as H.264 MP4 with "fast start" enabled so they begin playing before they finish downloading.
 
 ## Deploying to Cloudflare
