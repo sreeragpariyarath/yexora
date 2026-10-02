@@ -102,6 +102,35 @@ export function useRevealed() {
   return useSyncExternalStore(subscribe, isRevealed, () => false);
 }
 
+// The loader logo's animation cycle (.loader-mark in globals.css): it turns for the first
+// SPIN_MS of every CYCLE_MS, then rests
+const CYCLE_MS = 2400;
+const SPIN_MS = 1400;
+
+/**
+ * Calls `callback` at the start of the loader logo's next rest (right away if it's resting
+ * now or there's no loader). The scene's first real frames are heavy enough to stall the
+ * GPU process, which would freeze the spinning logo; during the rest nothing moves, so
+ * that stall can't be seen.
+ */
+export function whenLoaderResting(callback: () => void) {
+  const mark = document.querySelector(".loader-mark");
+  const time = mark?.getAnimations()[0]?.currentTime;
+  const t = typeof time === "number" ? time : null;
+  if (leaving || t === null) {
+    callback();
+    return () => {};
+  }
+  const phase = t % CYCLE_MS;
+  // Still early in the rest: go now. Otherwise wait for the next rest to begin.
+  if (phase >= SPIN_MS && phase < SPIN_MS + 250) {
+    callback();
+    return () => {};
+  }
+  const timer = window.setTimeout(callback, (SPIN_MS - phase + CYCLE_MS) % CYCLE_MS);
+  return () => window.clearTimeout(timer);
+}
+
 /** requestIdleCallback with a timeout fallback (Safari has no requestIdleCallback). */
 export function whenIdle(callback: () => void) {
   if (typeof window.requestIdleCallback === "function") return window.requestIdleCallback(callback, { timeout: 3000 });

@@ -13,7 +13,7 @@ import SceneFallback from "./SceneFallback";
 import { FAN_A, FAN_B, chapterAt, createFlowState, evaluate, type FlowState } from "./timeline";
 import useReducedMotion from "./useReducedMotion";
 import { onFrame } from "@/lib/frame";
-import { isRevealed, markReady } from "@/lib/loading";
+import { isRevealed, markReady, onRevealed, whenLoaderResting } from "@/lib/loading";
 
 export interface SectionLayout {
   /** Document top of each [data-chapter] section, in order */
@@ -141,6 +141,7 @@ function Warmup({ flowRef }: { flowRef: RefObject<FlowState> }) {
     f.warm = true;
     let cancelled = false;
     let stop = () => {};
+    let cancelRest = () => {};
     let frames = 0;
     const finish = () => {
       if (cancelled) return;
@@ -152,14 +153,20 @@ function Warmup({ flowRef }: { flowRef: RefObject<FlowState> }) {
       }, "render");
     };
     f.compiling = true;
+    // The first real frames (building the bloom/glass passes, uploading buffers) stall the GPU,
+    // which freezes the loader's spinning logo: render them while the logo is resting
     const compiled = () => {
-      f.compiling = false;
-      finish();
+      if (cancelled) return;
+      cancelRest = whenLoaderResting(() => {
+        f.compiling = false;
+        finish();
+      });
     };
     gl.compileAsync(scene, camera).then(compiled, compiled);
     return () => {
       cancelled = true;
       stop();
+      cancelRest();
       f.compiling = false;
       f.warm = false;
     };
@@ -172,6 +179,20 @@ export default function FlowCanvas({ layoutRef }: FlowCanvasProps) {
   const flowRef = useRef<FlowState>(createFlowState());
   const reduced = useReducedMotion();
   const [dpr, setDpr] = useState(1.5);
+  // The performance monitor only starts once the page is showing: the warm-up frames under
+  // the loader are slow by design, and judging them made it drop the resolution (resizing
+  // the canvas and every buffer, a visible hitch) right as the page appeared
+  const [monitor, setMonitor] = useState(false);
+  useEffect(() => {
+    let timer = 0;
+    const stop = onRevealed(() => {
+      timer = window.setTimeout(() => setMonitor(true), 1500);
+    });
+    return () => {
+      stop();
+      window.clearTimeout(timer);
+    };
+  }, []);
 
   return (
     <Canvas
@@ -185,12 +206,14 @@ export default function FlowCanvas({ layoutRef }: FlowCanvasProps) {
       {/* Drop resolution on slow devices instead of dropping frames. After 3 flip-flops it
           settles on 1: every dpr change resizes the canvas and all post-processing buffers,
           which is a visible hitch if it keeps toggling */}
-      <PerformanceMonitor
-        flipflops={3}
-        onDecline={() => setDpr(1)}
-        onIncline={() => setDpr(1.5)}
-        onFallback={() => setDpr(1)}
-      />
+      {monitor && (
+        <PerformanceMonitor
+          flipflops={3}
+          onDecline={() => setDpr(1)}
+          onIncline={() => setDpr(1.5)}
+          onFallback={() => setDpr(1)}
+        />
+      )}
       <color attach="background" args={["#000000"]} />
       <Driver layoutRef={layoutRef} flowRef={flowRef} reduced={reduced} />
       <CameraRig flowRef={flowRef} reduced={reduced} />
