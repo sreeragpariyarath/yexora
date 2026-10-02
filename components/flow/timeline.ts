@@ -174,6 +174,8 @@ export function createFlowState() {
     load: 0,
     /** True for the warm-up frames under the loader: everything draws once so its shader compiles there */
     warm: false,
+    /** True while Warmup's parallel shader compile runs; the canvas doesn't render meanwhile */
+    compiling: false,
     camX: 0,
     camZ: 12,
     fanAWall: 0,

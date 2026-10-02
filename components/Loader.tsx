@@ -54,7 +54,7 @@ export default function Loader() {
       }`}
     >
       {/* eslint-disable-next-line @next/next/no-img-element -- a plain img is in the static HTML with no wrapper or lazy loading */}
-      <img src="/logo-mark-loader.png" alt="" width={256} height={255} fetchPriority="high" className="loader-mark w-20 sm:w-24 h-auto" />
+      <img src="/logo-mark-loader.png" alt="" width={256} height={255} fetchPriority="high" className="loader-mark w-12 sm:w-14 h-auto will-change-transform" />
       <span className="sr-only">{revealed ? "Loaded" : "Loading"}</span>
     </div>
   );

@@ -107,10 +107,18 @@ const driveFanA = (f: FlowState): FanDrive => ({ load: f.load, grow: 1, wall: f.
 const driveFanB = (f: FlowState): FanDrive => ({ load: 1, grow: f.fanBGrow, wall: f.fanBWall, alpha: f.fanBAlpha });
 
 /** Renders the scene from SmoothScroll's shared frame loop, right after Lenis has scrolled. */
-function FrameBridge() {
+function FrameBridge({ flowRef }: { flowRef: RefObject<FlowState> }) {
   const advance = useThree((state) => state.advance);
-  // advance() takes seconds (it becomes clock.elapsedTime / delta); rAF time is in ms
-  useEffect(() => onFrame((time) => advance(time / 1000), "render"), [advance]);
+  // advance() takes seconds (it becomes clock.elapsedTime / delta); rAF time is in ms.
+  // Nothing renders until Warmup's parallel shader compile is done: rendering earlier
+  // compiles the same shaders synchronously, which can freeze the loader's spinning logo.
+  useEffect(
+    () =>
+      onFrame((time) => {
+        if (!flowRef.current.compiling) advance(time / 1000);
+      }, "render"),
+    [advance, flowRef]
+  );
   return null;
 }
 
@@ -143,10 +151,16 @@ function Warmup({ flowRef }: { flowRef: RefObject<FlowState> }) {
         markReady("scene");
       }, "render");
     };
-    gl.compileAsync(scene, camera).then(finish, finish);
+    f.compiling = true;
+    const compiled = () => {
+      f.compiling = false;
+      finish();
+    };
+    gl.compileAsync(scene, camera).then(compiled, compiled);
     return () => {
       cancelled = true;
       stop();
+      f.compiling = false;
       f.warm = false;
     };
   }, [gl, scene, camera, flowRef]);
@@ -167,7 +181,7 @@ export default function FlowCanvas({ layoutRef }: FlowCanvasProps) {
       camera={{ fov: 45, position: [0, 0, 12], near: 0.1, far: 120 }}
       fallback={<SceneFallback />}
     >
-      <FrameBridge />
+      <FrameBridge flowRef={flowRef} />
       {/* Drop resolution on slow devices instead of dropping frames. After 3 flip-flops it
           settles on 1: every dpr change resizes the canvas and all post-processing buffers,
           which is a visible hitch if it keeps toggling */}

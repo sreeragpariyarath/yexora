@@ -60,6 +60,8 @@ body {
   Loading screen (components/Loader.tsx): the mark turns one full circle clockwise
   (~1.4s, eased), rests for 1s, and repeats. Only transform is animated, so it runs on
   the compositor and keeps turning while the main thread is busy warming up the scene.
+  It also spins under reduced motion: it's the only sign the page is loading, and it is
+  a slow single turn (Windows' "Animation effects: off" turns reduced motion on).
 */
 .loader-mark {
   animation: loader-spin 2.4s infinite;
@@ -76,11 +78,6 @@ body {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .loader-mark {
-    animation: none;
-  }
-}
 
 /*
   Liquid glass (Apple "liquid display" style), used behind copy over the 3D fibres.
