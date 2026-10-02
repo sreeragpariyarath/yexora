@@ -12,7 +12,14 @@ export interface Service {
   works: ServiceWork[];
 }
 
-/** Temporary placeholder photo (picsum.photos, stable per seed). Swap for real project images. */
+/**
+ * A project image from public/images/web/ — compressed 1280px WebP copies of the owner's
+ * PNGs in public/images/ (about 100 KB each instead of 2 MB; images aren't optimised in
+ * the static export). Name = the PNG's name, lower-case, dashes for spaces.
+ */
+export const projectImage = (name: string) => `/images/web/${name}.webp`;
+
+/** Temporary placeholder photo (picsum.photos, stable per seed), for services without real images yet. */
 export const thumb = (seed: string, w = 800, h = 560) => `https://picsum.photos/seed/yexora-${seed}/${w}/${h}`;
 
 export const SERVICES_CONTENT = {
@@ -26,8 +33,8 @@ export const SERVICES_CONTENT = {
       description:
         "Interactive virtual environments, digital twins, and enterprise VR training for industrial, medical, and educational teams.",
       works: [
-        { title: "Training Simulation", image: thumb("vr-1") },
-        { title: "Virtual Walkthrough", image: thumb("vr-2") },
+        { title: "Training Simulation", image: projectImage("training-simulation") },
+        { title: "Virtual Walkthrough", image: projectImage("virtual-walkthrough") },
       ],
     },
     {
@@ -35,8 +42,8 @@ export const SERVICES_CONTENT = {
       description:
         "3D assets, animation, and real-time WebGL product visualizers for real estate, manufacturing, and retail.",
       works: [
-        { title: "Product Visualizer", image: thumb("3d-1") },
-        { title: "Architectural Render", image: thumb("3d-2") },
+        { title: "Product Visualizer", image: projectImage("product-visualizer") },
+        { title: "Architectural Render", image: projectImage("architectural-render") },
       ],
     },
     {
@@ -44,8 +51,8 @@ export const SERVICES_CONTENT = {
       description:
         "High-performance, SEO-focused websites and custom web apps — SaaS platforms, admin dashboards, and API integrations built to scale in the cloud.",
       works: [
-        { title: "Brand Portal", image: thumb("web-1") },
-        { title: "Operations Dashboard", image: thumb("app-1") },
+        { title: "Brand Portal", image: projectImage("brand-portal") },
+        { title: "Operations Dashboard", image: projectImage("operations-dashboard") },
       ],
     },
     {
@@ -53,8 +60,8 @@ export const SERVICES_CONTENT = {
       description:
         "Native and cross-platform iOS and Android apps, from first prototype to store launch and ongoing updates.",
       works: [
-        { title: "Field Service App", image: thumb("mobile-1") },
-        { title: "Booking App", image: thumb("mobile-2") },
+        { title: "Field Service App", image: projectImage("field-service-app") },
+        { title: "Booking App", image: projectImage("booking-app") },
       ],
     },
     {

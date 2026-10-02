@@ -3,7 +3,7 @@ import CopyBlock from "./CopyBlock";
 import Eyebrow from "./Eyebrow";
 import GlassPanel from "./GlassPanel";
 import TintedImage from "./TintedImage";
-import { thumb } from "./services";
+import { projectImage } from "./services";
 
 // Working principles as a bento grid of liquid-glass cards (layout from the owner's
 // reference, styled like the rest of the site). Photos are temporary placeholders.
@@ -29,7 +29,7 @@ export default function Principles() {
 
       <div className="mt-10 lg:mt-[8vh] grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-5">
         <GlassPanel className="group lg:col-span-6 min-h-64 lg:h-[38vh]">
-          <TintedImage src={thumb("principle-transparency", 1200, 800)} sizes="(min-width: 1024px) 50vw, 100vw" />
+          <TintedImage src={projectImage("transparency")} sizes="(min-width: 1024px) 50vw, 100vw" />
           <div aria-hidden className="absolute inset-0 bg-linear-to-t from-[#000000]/85 via-[#000000]/35 to-transparent" />
           <div className="relative h-full flex flex-col justify-end p-7 lg:p-[2.2vw]">
             <Eyebrow>Transparency</Eyebrow>
@@ -39,7 +39,7 @@ export default function Principles() {
         </GlassPanel>
 
         <GlassPanel delay={100} className="group lg:col-span-6 min-h-64 lg:h-[38vh]">
-          <TintedImage src={thumb("principle-aesthetics", 1200, 800)} sizes="(min-width: 1024px) 50vw, 100vw" />
+          <TintedImage src={projectImage("smart-aesthetics")} sizes="(min-width: 1024px) 50vw, 100vw" />
           <div aria-hidden className="absolute inset-0 bg-linear-to-t from-[#000000]/85 via-[#000000]/35 to-transparent" />
           <div className="relative h-full flex flex-col justify-end p-7 lg:p-[2.2vw]">
             <Eyebrow>Smart aesthetics</Eyebrow>
@@ -61,7 +61,7 @@ export default function Principles() {
         </GlassPanel>
 
         <GlassPanel delay={100} className="group lg:col-span-5 min-h-56 lg:min-h-[30vh]">
-          <TintedImage src={thumb("principle-engineering", 1200, 800)} sizes="(min-width: 1024px) 40vw, 100vw" />
+          <TintedImage src={projectImage("value-driven-engineering")} sizes="(min-width: 1024px) 40vw, 100vw" />
           <div aria-hidden className="absolute inset-0 bg-linear-to-t from-[#000000]/85 via-[#000000]/35 to-transparent" />
           <div className="relative h-full flex flex-col justify-end p-7 lg:p-[2.2vw]">
             <Eyebrow>Value-driven engineering</Eyebrow>
