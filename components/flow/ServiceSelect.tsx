@@ -139,7 +139,7 @@ export default function ServiceSelect({ name, label, options, placeholder = "Cho
         aria-multiselectable="true"
         aria-labelledby={labelId}
         onMouseDown={(e) => e.preventDefault()}
-        className={`absolute left-0 right-0 top-full z-30 mt-2 origin-top rounded-2xl border border-white/12 bg-[#0b0e1d]/95 p-1.5 backdrop-blur-xl shadow-[0_24px_60px_-12px_rgba(0,0,0,0.85),0_0_44px_-10px_rgba(47,107,255,0.4)] transition-[opacity,translate,scale,visibility] duration-200 ease-out ${
+        className={`absolute left-0 right-0 top-full z-30 mt-2 origin-top rounded-xl border border-white/10 bg-[#121212] p-1.5 shadow-[0_12px_24px_-12px_rgba(0,0,0,0.8)] transition-[opacity,translate,scale,visibility] duration-200 ease-out ${
           open ? "visible opacity-100 translate-y-0 scale-100" : "invisible opacity-0 -translate-y-1.5 scale-[0.98]"
         }`}
       >
@@ -154,14 +154,14 @@ export default function ServiceSelect({ name, label, options, placeholder = "Cho
               onClick={() => toggle(option)}
               onMouseEnter={() => setActive(i)}
               className={`flex items-center gap-3 rounded-xl px-3 py-2.5 font-poppins text-sm cursor-pointer select-none transition-colors ${
-                i === active ? "bg-white/[0.07]" : ""
+                i === active ? "bg-white/[0.06]" : ""
               } ${isSelected ? "text-white" : "text-white/70"}`}
             >
               <span
                 aria-hidden
                 className={`w-[18px] h-[18px] shrink-0 rounded-md border flex items-center justify-center transition-[background-color,border-color,box-shadow] duration-200 ${
                   isSelected
-                    ? "border-transparent bg-linear-to-br from-blue-400 to-accent shadow-[0_0_12px_rgba(47,107,255,0.6)]"
+                    ? "border-transparent bg-accent"
                     : "border-white/25"
                 }`}
               >
