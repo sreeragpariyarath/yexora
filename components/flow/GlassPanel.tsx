@@ -13,14 +13,11 @@ export default function GlassPanel({
   children,
   className = "",
   delay = 0,
-  clip = true,
 }: {
   children: ReactNode;
   className?: string;
   /** Stagger, in ms */
   delay?: number;
-  /** Clip the content to the rounded card. Turn off for cards with pop-overs (e.g. a dropdown). */
-  clip?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [seen, setSeen] = useState(false);
@@ -52,7 +49,7 @@ export default function GlassPanel({
       data-glass=""
       data-glass-shown={shown ? "1" : "0"}
       style={{ transitionDelay: shown ? `${delay}ms` : "0ms" }}
-      className={`liquid-glass ${clip ? "overflow-hidden" : ""} text-white transition-[opacity,translate] duration-1000 ease-out ${
+      className={`liquid-glass overflow-hidden text-white transition-[opacity,translate] duration-1000 ease-out ${
         shown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
       } ${className}`}
     >

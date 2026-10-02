@@ -4,23 +4,21 @@ import { type ComponentType, type FormEvent, type ReactNode } from "react";
 import { ArrowUpRight, Mail, MapPin } from "lucide-react";
 import SocialLinks from "@/components/socials";
 import { EMAIL, LEGAL_NAME, LOCATION } from "@/components/contact";
-import { GLASS_PILL, GlassPillParts } from "@/components/GlassPill";
 import CopyBlock from "./CopyBlock";
 import Eyebrow from "./Eyebrow";
-import GlassPanel from "./GlassPanel";
 import ServiceSelect from "./ServiceSelect";
 import { SERVICES } from "./services";
 
 // Floating-label fields: the label sits in the field and floats up on focus or once
 // filled (CSS only, via `peer` + `placeholder-shown`; the placeholder is a single space).
-// Fields are translucent tiles inside the glass card, with an accent ring on focus.
+// Fields are flat, filled dark boxes on the solid form card, with an accent ring on focus.
 const INPUT =
-  "peer w-full rounded-2xl bg-white/[0.04] border border-white/12 shadow-[inset_0_1px_0_rgba(255,255,255,0.07)] px-4 pt-6 pb-2.5 font-poppins text-sm text-white outline-none transition-[border-color,background-color,box-shadow] duration-300 hover:border-white/25 focus:border-accent/70 focus:bg-white/[0.06] focus:shadow-[0_0_0_4px_rgba(47,107,255,0.18)]";
+  "peer w-full rounded-xl bg-[#121212] border border-white/10 px-4 pt-6 pb-2.5 font-poppins text-sm text-white outline-none transition-[border-color,box-shadow] duration-300 hover:border-white/20 focus:border-accent/70 focus:shadow-[0_0_0_4px_rgba(47,107,255,0.18)]";
 const LABEL =
   "pointer-events-none absolute left-4 top-2 font-poppins text-[10px] uppercase tracking-[0.16em] text-white/50 transition-all duration-200 peer-placeholder-shown:top-[1.1rem] peer-placeholder-shown:text-sm peer-placeholder-shown:normal-case peer-placeholder-shown:tracking-normal peer-focus:top-2 peer-focus:text-[10px] peer-focus:uppercase peer-focus:tracking-[0.16em] peer-focus:text-blue-300";
 const TITLE = "font-poppins font-medium tracking-tight leading-[1.08] text-white";
 const BODY = "font-poppins text-sm lg:text-[0.95vw] leading-relaxed text-white/85";
-const CARD_LABEL = "block font-poppins font-medium text-[10px] uppercase tracking-[0.18em] text-white/55";
+const ROW_LABEL = "block font-poppins font-medium text-[10px] uppercase tracking-[0.18em] text-white/55";
 
 function Field({ name, label, type = "text", autoComplete, multiline = false, className = "" }: {
   name: string;
@@ -45,29 +43,28 @@ function Field({ name, label, type = "text", autoComplete, multiline = false, cl
   );
 }
 
-/** Round icon chip in the accent gradient (same as the glass pill's arrow chip). */
+/** Flat round icon chip. */
 function IconChip({ icon: Icon }: { icon: ComponentType<{ className?: string }> }) {
   return (
-    <span className="w-11 h-11 shrink-0 rounded-full flex items-center justify-center text-white bg-linear-to-br from-[#7ea6ff] to-accent shadow-[0_0_18px_rgba(47,107,255,0.55)]">
+    <span className="w-11 h-11 shrink-0 rounded-full flex items-center justify-center text-blue-300 bg-white/[0.06] ring-1 ring-white/10">
       <Icon className="w-[18px] h-[18px]" />
     </span>
   );
 }
 
-/** One contact detail on its own glass card; a link when it has an href. */
-function Detail({ icon, label, children, href, delay }: {
+/** One contact detail as a plain row; a link when it has an href. */
+function Detail({ icon, label, children, href }: {
   icon: ComponentType<{ className?: string }>;
   label: string;
   children: ReactNode;
   href?: string;
-  delay: number;
 }) {
   const inner = (
     <>
       <IconChip icon={icon} />
       <span className="min-w-0 text-left">
-        <span className={CARD_LABEL}>{label}</span>
-        <span className="block mt-1 font-poppins text-sm sm:text-[15px] lg:text-[1.05vw] text-white [overflow-wrap:anywhere]">{children}</span>
+        <span className={ROW_LABEL}>{label}</span>
+        <span className="block mt-1 font-poppins text-sm sm:text-[15px] lg:text-[1.05vw] text-white/90 transition-colors group-hover:text-white [overflow-wrap:anywhere]">{children}</span>
       </span>
       {href && (
         <ArrowUpRight
@@ -77,24 +74,20 @@ function Detail({ icon, label, children, href, delay }: {
       )}
     </>
   );
-  const row = "relative flex items-center gap-4 p-5 lg:p-[1.4vw]";
-  return (
-    <GlassPanel delay={delay}>
-      {href ? (
-        <a href={href} className={`group ${row} rounded-[inherit] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent`}>
-          {inner}
-        </a>
-      ) : (
-        <div className={row}>{inner}</div>
-      )}
-    </GlassPanel>
+  const row = "flex items-center gap-4 py-5";
+  return href ? (
+    <a href={href} className={`group ${row} rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent`}>
+      {inner}
+    </a>
+  ) : (
+    <div className={row}>{inner}</div>
   );
 }
 
 /**
- * Closing section, in the site's glass style: the heading and contact details on glass
- * cards on the left, the project form on one glass card on the right. There is no
- * backend yet, so submitting opens the visitor's mail app with the enquiry filled in.
+ * Closing section (no liquid glass here, at the owner's request): the heading and contact
+ * details as plain rows on the left, the project form on one solid dark card on the right.
+ * There is no backend yet, so submitting opens the visitor's mail app with the enquiry filled in.
  */
 export default function Contact() {
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -109,10 +102,9 @@ export default function Contact() {
 
   return (
     <section data-chapter id="contact" aria-label="Contact" className="relative w-full px-6 sm:px-10 lg:px-[6vw] pt-[16vh] pb-10">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-5">
-        <div className="lg:col-span-5 flex flex-col gap-4 lg:gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-[5vw] items-start">
+        <div className="lg:col-span-5">
           <CopyBlock
-            glass
             eyebrow="Contact"
             title={
               <>
@@ -126,29 +118,29 @@ export default function Contact() {
             className="text-center lg:text-left"
           />
 
-          <Detail icon={Mail} label="Email" href={`mailto:${EMAIL}`} delay={100}>
-            {EMAIL}
-          </Detail>
-          <Detail icon={MapPin} label="Location" delay={200}>
-            {LOCATION}
-          </Detail>
-
-          <GlassPanel delay={300}>
-            <div className="flex items-center justify-between gap-4 p-5 lg:p-[1.4vw]">
-              <span className={CARD_LABEL}>Follow us</span>
+          <div className="mt-10 max-w-md mx-auto lg:mx-0 divide-y divide-white/10 border-y border-white/10">
+            <Detail icon={Mail} label="Email" href={`mailto:${EMAIL}`}>
+              {EMAIL}
+            </Detail>
+            <Detail icon={MapPin} label="Location">
+              {LOCATION}
+            </Detail>
+            <div className="flex items-center justify-between gap-4 py-5">
+              <span className={ROW_LABEL}>Follow us</span>
               <div className="flex items-center gap-2">
                 <SocialLinks
                   iconClassName="w-4 h-4"
-                  className="w-11 h-11 rounded-full border border-white/15 bg-white/[0.05] flex items-center justify-center transition-[border-color,background-color,color] duration-300 hover:border-accent/60 hover:bg-accent/15 hover:text-white!"
+                  className="w-11 h-11 rounded-full border border-white/15 flex items-center justify-center transition-[border-color,background-color,color] duration-300 hover:border-accent/60 hover:bg-accent/15 hover:text-white!"
                 />
               </div>
             </div>
-          </GlassPanel>
+          </div>
         </div>
 
-        {/* Not clipped, so the services dropdown can open past the fields below it */}
-        <GlassPanel clip={false} delay={150} className="lg:col-span-7">
-          <form onSubmit={onSubmit} className="h-full flex flex-col gap-4 p-6 sm:p-8 lg:p-[2.4vw]">
+        {/* Solid, flat dark card (no glass, glow or blur). Not clipped, so the services
+            dropdown can open past the fields below it */}
+        <div className="lg:col-span-7 rounded-3xl bg-[#0a0a0a] border border-white/10">
+          <form onSubmit={onSubmit} className="flex flex-col gap-4 p-6 sm:p-8 lg:p-[2.4vw]">
             <div className="text-center lg:text-left mb-2">
               <Eyebrow>Start a project</Eyebrow>
               <h3 className={`${TITLE} mt-3 text-2xl lg:text-[2vw]`}>Tell Us About Your Idea</h3>
@@ -163,14 +155,20 @@ export default function Contact() {
             {/* Dropdown instead of chips: several services can be picked (see ServiceSelect) */}
             <ServiceSelect name="service" label="What do you need?" options={SERVICES} />
 
-            <Field name="message" label="Tell us about your project" multiline className="flex-1" />
+            <Field name="message" label="Tell us about your project" multiline />
 
-            {/* Same glass pill as the header's "Get started" */}
-            <button type="submit" className={`${GLASS_PILL} self-center lg:self-start mt-2`}>
-              <GlassPillParts>Send enquiry</GlassPillParts>
+            <button
+              type="submit"
+              className="group self-center lg:self-start mt-2 inline-flex items-center gap-2.5 rounded-full bg-accent px-6 py-3 font-poppins font-medium text-xs tracking-[0.14em] uppercase text-white cursor-pointer transition-colors duration-300 hover:bg-[#4a80ff] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              Send enquiry
+              <ArrowUpRight
+                aria-hidden
+                className="w-4 h-4 transition-[translate] duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              />
             </button>
           </form>
-        </GlassPanel>
+        </div>
       </div>
 
       <footer className="mt-[12vh] pt-6 border-t border-white/[0.07] flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-center font-poppins text-[10px] lg:text-[11px] capitalize tracking-[0.24em] text-white/45">
