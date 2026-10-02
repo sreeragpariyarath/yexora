@@ -64,24 +64,7 @@ export const SERVICES_CONTENT = {
         { title: "Booking App", image: projectImage("booking-app") },
       ],
     },
-    {
-      title: "AI & Data Solutions",
-      description:
-        "Machine learning, computer vision, data analytics, and automation that turn your data into decisions.",
-      works: [
-        { title: "Vision Inspection", image: thumb("ai-1") },
-        { title: "Insights Dashboard", image: thumb("ai-2") },
-      ],
-    },
-    {
-      title: "Cloud, DevOps & Security",
-      description:
-        "Cloud architecture, CI/CD pipelines, monitoring, and cybersecurity that keep your products fast and safe.",
-      works: [
-        { title: "Cloud Migration", image: thumb("cloud-1") },
-        { title: "Release Pipeline", image: thumb("cloud-2") },
-      ],
-    },
+    
     {
       title: "UI/UX Design",
       description:
