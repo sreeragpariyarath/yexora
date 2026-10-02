@@ -10,7 +10,7 @@ const NEEDED: ReadyKey[] = ["scene", "fonts"];
 /** One spin of the logo (see .loader-mark in globals.css), counted from navigation start */
 const MIN_MS = 1400;
 /** Reveal anyway after this, so a slow device or a stuck task can never trap the page */
-const MAX_MS = 8000;
+const MAX_MS = 15000;
 
 const ready = new Set<ReadyKey>();
 const listeners = new Set<() => void>();
