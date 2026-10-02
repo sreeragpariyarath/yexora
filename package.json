@@ -1,7 +1,32 @@
 {
-  "name": "yexora",
-  "version": "0.1.0",
+  "name": "yexora-it-solutions",
+  "version": "1.0.0",
   "private": true,
+  "description": "Website of Yexora IT Solutions Private Limited — software, AR/VR experiences and AI solutions. A static Next.js site with a scroll-driven 3D scene, hosted on Cloudflare.",
+  "homepage": "https://yexoraitsolutions.com",
+  "author": {
+    "name": "Yexora IT Solutions Private Limited",
+    "email": "contact@yexoraitsolutions.com",
+    "url": "https://yexoraitsolutions.com"
+  },
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sreeragpariyarath/yexora.git"
+  },
+  "keywords": [
+    "yexora",
+    "yexora it solutions",
+    "software development",
+    "web development",
+    "ar",
+    "vr",
+    "ai",
+    "nextjs"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
