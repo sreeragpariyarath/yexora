@@ -9,7 +9,7 @@ Marketing site for **Yexora IT Solutions** ([yexoraitsolutions.com](https://yexo
 - three.js via `@react-three/fiber`, `@react-three/drei` and `@react-three/postprocessing`
 - Lenis smooth scrolling
 
-There is no backend. The contact form opens the visitor's email app with the enquiry filled in.
+There is no backend. The contact form sends enquiries through [Web3Forms](https://web3forms.com), which emails them to the company inbox; its access key is `WEB3FORMS_KEY` in `components/contact.ts`, and the recipient address is set in the Web3Forms dashboard.
 
 ## Local development
 

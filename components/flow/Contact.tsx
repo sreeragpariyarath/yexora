@@ -1,9 +1,9 @@
 "use client";
 
-import { type ComponentType, type FormEvent, type ReactNode } from "react";
-import { ArrowUpRight, Mail, MapPin } from "lucide-react";
+import { useState, type ComponentType, type FormEvent, type ReactNode } from "react";
+import { ArrowUpRight, Check, LoaderCircle, Mail, MapPin } from "lucide-react";
 import SocialLinks from "@/components/socials";
-import { EMAIL, LEGAL_NAME, LOCATION } from "@/components/contact";
+import { EMAIL, LEGAL_NAME, LOCATION, WEB3FORMS_KEY } from "@/components/contact";
 import CopyBlock from "./CopyBlock";
 import Eyebrow from "./Eyebrow";
 import ServiceSelect from "./ServiceSelect";
@@ -87,17 +87,46 @@ function Detail({ icon, label, children, href }: {
 /**
  * Closing section (no liquid glass here, at the owner's request): the heading and contact
  * details as plain rows on the left, the project form on one solid dark card on the right.
- * There is no backend yet, so submitting opens the visitor's mail app with the enquiry filled in.
+ * The form posts to Web3Forms, which emails the enquiry to the owner's inbox (no backend of our own).
  */
 export default function Contact() {
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  // Bumped to remount (clear) the form, including the services dropdown, after a send
+  const [formKey, setFormKey] = useState(0);
+
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (status === "sending") return;
     const data = new FormData(e.currentTarget);
     const services = data.getAll("service").map(String);
-    const needs = services.length ? services.join(", ") : "Not specified";
-    const subject = `Project enquiry — ${services[0] ?? "New project"}`;
-    const body = `Name: ${data.get("name")}\nEmail: ${data.get("email")}\nServices: ${needs}\n\n${data.get("message")}`;
-    window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    setStatus("sending");
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          subject: `New enquiry: ${services[0] ?? "New project"}`,
+          from_name: "Yexora website",
+          name: data.get("name"),
+          // Web3Forms sets this as the reply-to, so replying goes straight to the visitor
+          email: data.get("email"),
+          services: services.length ? services.join(", ") : "Not specified",
+          message: data.get("message"),
+          // Honeypot: humans never see or tick it; Web3Forms drops submissions where it's set
+          botcheck: data.get("botcheck") === "on",
+        }),
+      });
+      const json = (await res.json().catch(() => null)) as { success?: boolean } | null;
+      setStatus(res.ok && json?.success ? "sent" : "error");
+    } catch {
+      setStatus("error");
+    }
+  };
+
+  const sendAnother = () => {
+    setFormKey((k) => k + 1);
+    setStatus("idle");
   };
 
   return (
@@ -140,7 +169,25 @@ export default function Contact() {
         {/* Solid, flat dark card (no glass, glow or blur). Not clipped, so the services
             dropdown can open past the fields below it */}
         <div className="lg:col-span-7 rounded-3xl bg-[#0a0a0a] border border-white/10">
-          <form onSubmit={onSubmit} className="flex flex-col gap-4 p-6 sm:p-8 lg:p-[2.4vw]">
+          {status === "sent" ? (
+            <div role="status" className="flex flex-col items-center lg:items-start text-center lg:text-left gap-4 p-6 sm:p-8 lg:p-[2.4vw] min-h-80 justify-center">
+              <span className="w-14 h-14 rounded-full flex items-center justify-center bg-accent text-white">
+                <Check className="w-7 h-7" strokeWidth={2.5} />
+              </span>
+              <h3 className={`${TITLE} text-2xl lg:text-[2vw]`}>Thanks, We&apos;ll Be in Touch</h3>
+              <p className={BODY}>Your enquiry has been sent. We&apos;ll get back to you at the email you gave us.</p>
+              <button
+                type="button"
+                onClick={sendAnother}
+                className="mt-1 font-poppins text-xs tracking-[0.14em] uppercase text-blue-300 hover:text-white transition-colors cursor-pointer"
+              >
+                Send another enquiry
+              </button>
+            </div>
+          ) : (
+          <form key={formKey} onSubmit={onSubmit} className="flex flex-col gap-4 p-6 sm:p-8 lg:p-[2.4vw]">
+            {/* Honeypot for bots (see onSubmit): hidden from people and from keyboard focus */}
+            <input type="checkbox" name="botcheck" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
             <div className="text-center lg:text-left mb-2">
               <Eyebrow>Start a project</Eyebrow>
               <h3 className={`${TITLE} mt-3 text-2xl lg:text-[2vw]`}>Tell Us About Your Idea</h3>
@@ -159,15 +206,30 @@ export default function Contact() {
 
             <button
               type="submit"
-              className="group self-center lg:self-start mt-2 inline-flex items-center gap-2.5 rounded-full bg-accent px-6 py-3 font-poppins font-medium text-xs tracking-[0.14em] uppercase text-white cursor-pointer transition-colors duration-300 hover:bg-[#4a80ff] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              disabled={status === "sending"}
+              className="group self-center lg:self-start mt-2 inline-flex items-center gap-2.5 rounded-full bg-accent px-6 py-3 font-poppins font-medium text-xs tracking-[0.14em] uppercase text-white cursor-pointer transition-colors duration-300 hover:bg-[#4a80ff] disabled:cursor-wait disabled:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
-              Send enquiry
-              <ArrowUpRight
-                aria-hidden
-                className="w-4 h-4 transition-[translate] duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-              />
+              {status === "sending" ? "Sending…" : "Send enquiry"}
+              {status === "sending" ? (
+                <LoaderCircle aria-hidden className="w-4 h-4 animate-spin" />
+              ) : (
+                <ArrowUpRight
+                  aria-hidden
+                  className="w-4 h-4 transition-[translate] duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                />
+              )}
             </button>
+            {status === "error" && (
+              <p role="alert" className="font-poppins text-sm text-red-300 text-center lg:text-left">
+                Couldn&apos;t send right now. Please try again, or email us at{" "}
+                <a href={`mailto:${EMAIL}`} className="underline hover:text-white">
+                  {EMAIL}
+                </a>
+                .
+              </p>
+            )}
           </form>
+          )}
         </div>
       </div>
 
